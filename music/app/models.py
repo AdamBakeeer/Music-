@@ -3,6 +3,8 @@ from app import db
 # User Table
 class User(db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
+    firstname = db.Column(db.String(100), index=True, unique=True, nullable=False)
+    lastname = db.Column(db.String(100), index=True, unique=True, nullable=False)
     username = db.Column(db.String(100), index=True, unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
@@ -15,25 +17,16 @@ class User(db.Model):
 class Artist(db.Model):
     artist_id = db.Column(db.String(80), primary_key=True)  # Spotify Artist ID
     artist_name = db.Column(db.String(100), index=True, unique=True, nullable=False)
+    listeners = db.Column(db.Integer, nullable=False, default=0)  # Artist popularity (0-100)
     songs = db.relationship('SongArtist', back_populates='artist', lazy='select')  # Many-to-Many
-    albums = db.relationship('Album', back_populates='artist', lazy='select')  # One-to-Many
-
-# Album Table
-class Album(db.Model):
-    album_id = db.Column(db.String(80), primary_key=True)  # Spotify Album ID
-    title = db.Column(db.String(200), nullable=False)
-    release_date = db.Column(db.Date)
-    artist_id = db.Column(db.String(80), db.ForeignKey('artist.artist_id'), nullable=False)
-    artist = db.relationship('Artist', back_populates='albums')  # Many-to-One
-    songs = db.relationship('Song', backref='album', lazy='select')  # One-to-Many
 
 # Song Table
 class Song(db.Model):
     song_id = db.Column(db.String(150), primary_key=True)  # Spotify Song ID
     title = db.Column(db.String(200), nullable=False)
-    duration = db.Column(db.Integer)
+    duration = db.Column(db.Integer)  # Duration in seconds
     genre = db.Column(db.String(80))
-    album_id = db.Column(db.String(80), db.ForeignKey('album.album_id'))
+    artist_ids = db.Column(db.Text)  # Comma-separated artist IDs
     playlists = db.relationship('PlaylistSong', back_populates='song', lazy='select')  # Many-to-Many
     artists = db.relationship('SongArtist', back_populates='song', lazy='select')  # Many-to-Many
 

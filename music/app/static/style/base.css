@@ -1,0 +1,42 @@
+header {
+    background-color: #333; 
+    color: white; 
+    padding-top: 1.5%;;
+    text-align: center; 
+    border-bottom: 2px solid #444; 
+    font-family: Arial, sans-serif; 
+    height: 50px;
+}
+
+.section1 {
+    text-align: left;
+}
+
+.section2 {
+    text-align: center;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Style for the clickable image */
+.nav-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+.nav-image:hover {
+    transform: scale(1.1); /* Slight zoom on hover */
+}
+
+/* Style for the third column */
+.section3 {
+    text-align: right; /* Align the image to the right */
+    padding-right: 10px;
+}
+
