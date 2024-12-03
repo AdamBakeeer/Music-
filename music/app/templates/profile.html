@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/base.css') }}">
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Back to Home Button -->
+        <div class="mb-3">
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">← Back to Home</a>
+        </div>
+
+        <h1>Your Profile</h1>
+        <hr>
+
+        <!-- Username Change -->
+        <h3>Change Username</h3>
+        <form method="POST" action="{{ url_for('change_username') }}">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                <label for="username">New Username</label>
+                <input type="text" id="username" name="username" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Update Username</button>
+        </form>
+        <hr>
+
+        <!-- Password Change -->
+        <h3>Change Password</h3>
+        <form method="POST" action="{{ url_for('change_password') }}">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                <label for="current_password">Current Password</label>
+                <input type="password" id="current_password" name="current_password" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="new_password">New Password</label>
+                <input type="password" id="new_password" name="new_password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Update Password</button>
+        </form>
+        <hr>
+
+        <!-- Preferences Update -->
+        <h3>Change Preferences</h3>
+        <form method="POST" action="{{ url_for('change_preferences') }}">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                <label for="artist1">Preferred Artist 1</label>
+                <select id="artist1" name="artist1" class="form-control" required>
+                    {% for artist_id, artist_name in artists %}
+                    <option value="{{ artist_id }}">{{ artist_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="artist2">Preferred Artist 2</label>
+                <select id="artist2" name="artist2" class="form-control" required>
+                    {% for artist_id, artist_name in artists %}
+                    <option value="{{ artist_id }}">{{ artist_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="artist3">Preferred Artist 3</label>
+                <select id="artist3" name="artist3" class="form-control" required>
+                    {% for artist_id, artist_name in artists %}
+                    <option value="{{ artist_id }}">{{ artist_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="genre1">Preferred Genre 1</label>
+                <select id="genre1" name="genre1" class="form-control" required>
+                    {% for genre_id, genre_name in genres %}
+                    <option value="{{ genre_id }}">{{ genre_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="genre2">Preferred Genre 2</label>
+                <select id="genre2" name="genre2" class="form-control" required>
+                    {% for genre_id, genre_name in genres %}
+                    <option value="{{ genre_id }}">{{ genre_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="genre3">Preferred Genre 3</label>
+                <select id="genre3" name="genre3" class="form-control" required>
+                    {% for genre_id, genre_name in genres %}
+                    <option value="{{ genre_id }}">{{ genre_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Update Preferences</button>
+        </form>
+        <hr>
+
+        <!-- Delete Account -->
+        <h3>Delete Account</h3>
+        <a href="{{ url_for('confirm_delete') }}" class="btn btn-danger mt-2">Delete Account</a>
+        <hr>
+
+        <!-- Logout -->
+        <form method="POST" action="{{ url_for('logout') }}">
+            {{ form.hidden_tag() }}
+            <button type="submit" class="btn btn-warning">Logout</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+</body>
+</html>

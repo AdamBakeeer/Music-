@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Deletion</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/base.css') }}">
+</head>
+<body style="background-color: #222; color: white;">
+    <div class="container mt-5">
+        <!-- Back Button -->
+        <div class="mb-3">
+            <a href="{{ url_for('profile', user_id=session['user_id']) }}" class="btn btn-secondary">← Back to Profile</a>
+        </div>
+
+        <!-- Deletion Confirmation Message -->
+        <h1 class="text-center mb-4">Are you sure you want to delete your account?</h1>
+
+        <!-- Playlist Section -->
+        <div class="card mb-3" style="background-color: #333; color: white; border: none;">
+            <div class="card-body">
+                <h5 class="card-title text-center">Goodbye for now :(</h5>
+                <p class="card-text text-center">@Adamtify Cares</p>
+                <a href="https://www.spotify.com" target="_blank" class="btn btn-primary d-block mx-auto mb-3" style="width: 200px;">Save on Spotify</a>
+
+                <!-- Playlist Tracks -->
+                <ol class="list-group list-group-flush text-center">
+                    <li class="list-group-item bg-dark text-white">1. If - Janet Jackson (04:31)</li>
+                    <li class="list-group-item bg-dark text-white">2. You - Gold Panda (03:36)</li>
+                    <li class="list-group-item bg-dark text-white">3. Leave Us - Djuma Soundsystem, Pete Oak (07:58)</li>
+                    <li class="list-group-item bg-dark text-white">4. Now - Paramore (04:10)</li>
+                    <li class="list-group-item bg-dark text-white">5. You'll - Seekae (02:05)</li>
+                    <li class="list-group-item bg-dark text-white">6. Take Away - Vasudeva (04:15)</li>
+                    <li class="list-group-item bg-dark text-white">7. The - House Music (00:44)</li>
+                    <li class="list-group-item bg-dark text-white">8. Biggest - Markk Blow (01:00)</li>
+                    <li class="list-group-item bg-dark text-white">9. Part of Us - Polar Circles (03:01)</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Goodbye Message -->
+        <p class="text-center mt-4" style="font-size: 1.2rem;">Adamtify loves you ❤️</p>
+
+        <!-- Confirmation Buttons -->
+        <div class="text-center">
+            <form method="POST" action="{{ url_for('delete_account') }}">
+                {{ form.hidden_tag() }}
+                <button type="submit" class="btn btn-danger mt-2">Yes, Delete My Account</button>
+            </form>
+            <a href="{{ url_for('profile', user_id=session['user_id']) }}" class="btn btn-secondary mt-3">Cancel</a>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+</body>
+</html>

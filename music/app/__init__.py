@@ -1,10 +1,13 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_wtf import CSRFProtect
 import os
 
 # Initialize Flask app
 app = Flask(__name__)
+app.secret_key = 'your-secret-key'  
+csrf = CSRFProtect(app)
 
 # Configuration
 app.config['SECRET_KEY'] = os.urandom(24)
