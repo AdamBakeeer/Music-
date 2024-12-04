@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const addButton = document.createElement("button");
             addButton.className = "btn btn-primary btn-sm";
             addButton.textContent = "+";
-            addButton.onclick = () => alert(`Add ${song.title} to a playlist!`);
+            addButton.onclick = () => addSongToPlaylist(song.song_id);
 
             listItem.appendChild(title);
             listItem.appendChild(addButton);
@@ -79,5 +79,38 @@ document.addEventListener("DOMContentLoaded", () => {
             option.textContent = song.title;
             dropdown.appendChild(option);
         });
+    }
+
+    // Function to add a song to the playlist (both main page and modal)
+    function addSongToPlaylist(songId) {
+        // Assuming you have a playlist selected or create a new playlist logic
+        const playlistId = getCurrentPlaylistId(); // You can implement this function to get the current playlist ID
+
+        fetch(`/add_song_to_playlist`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                song_id: songId,
+                playlist_id: playlistId,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Song added to the playlist!");
+                // Optionally, update the UI (e.g., disable the add button or refresh the playlist)
+            } else {
+                alert("Failed to add song to the playlist.");
+            }
+        })
+        .catch(error => console.error("Error adding song to playlist:", error));
+    }
+
+    function getCurrentPlaylistId() {
+        // This function should return the current playlist ID, or handle the logic for playlist selection
+        // Example: return document.getElementById("playlistSelect").value;
+        return 1;  // Placeholder for playlist ID
     }
 });

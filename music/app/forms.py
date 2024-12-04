@@ -1,8 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, SubmitField, PasswordField, SelectMultipleField
+from wtforms import StringField, PasswordField, SelectField, SelectMultipleField, SubmitField, HiddenField, FieldList, FormField
 from wtforms.validators import DataRequired, Email, Length
-from flask_wtf import FlaskForm
-from wtforms import HiddenField
 
 
 class SignupForm(FlaskForm):
@@ -19,6 +17,7 @@ class SignupForm(FlaskForm):
     genre3 = SelectField('Preferred Genre 3', choices=[], validators=[DataRequired()], coerce=str)
     submit = SubmitField('Sign Up')
 
+
 class LoginForm(FlaskForm):
     identifier = StringField('Username or Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -28,15 +27,24 @@ class LoginForm(FlaskForm):
 class DeleteAccountForm(FlaskForm):
     hidden_token = HiddenField('CSRF Token')
 
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired
-
-class PlaylistForm(FlaskForm):
-    name = StringField('Playlist Name', validators=[DataRequired()])
-    submit = SubmitField('Add Playlist')
 
 class PlaylistForm(FlaskForm):
     playlist_name = StringField('Playlist Name', validators=[DataRequired()])
-    songs = SelectMultipleField('Songs', validators=[DataRequired()], choices=[])
-    submit = SubmitField('Add Playlist')
+    song_ids = SelectMultipleField('Select Songs', coerce=int, validators=[DataRequired()])  # multiple choices dropdown
+    submit = SubmitField('Create Playlist')
+
+
+class CSRFProtectedForm(FlaskForm):
+    pass
+
+class AddSongsForm(FlaskForm):
+    playlist_name = StringField('Playlist Name', validators=[DataRequired()])
+    song1 = SelectField('Song 1', validators=[DataRequired()])
+    song2 = SelectField('Song 2', validators=[DataRequired()])
+    song3 = SelectField('Song 3', validators=[DataRequired()])
+    song4 = SelectField('Song 4', validators=[DataRequired()])
+    song5 = SelectField('Song 5', validators=[DataRequired()])
+
+class SongRemoveForm(FlaskForm):
+    song_id = HiddenField('Song ID', validators=[DataRequired()])
+    playlist_id = HiddenField('Playlist ID', validators=[DataRequired()])

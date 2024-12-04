@@ -41,7 +41,7 @@ function populateSongList(listElement, songs) {
             const addButton = document.createElement("button");
             addButton.className = "btn btn-primary btn-sm";
             addButton.textContent = "+";
-            addButton.onclick = () => handleAddSong(song.song_id);
+            addButton.onclick = () => handleAddSong(song.song_id, song.title);  // Pass song_id and title to the function
 
             listItem.appendChild(title);
             listItem.appendChild(addButton);
@@ -50,22 +50,24 @@ function populateSongList(listElement, songs) {
     }
 }
 
-function handleAddSong(songId) {
+function handleAddSong(songId, songTitle) {
     fetch(`/get_playlists`)
         .then((response) => response.json())
         .then((data) => {
             if (data.playlists.length === 0) {
                 alert("No playlists found. Please create a playlist first.");
             } else if (data.playlists.length === 1) {
+                // Automatically add to the only playlist
                 submitAddToPlaylist(songId, data.playlists[0].id);
             } else {
-                displayPlaylistSelectionModal(songId, data.playlists);
+                // Show the playlist selection modal
+                displayPlaylistSelectionModal(songId, songTitle, data.playlists);
             }
         })
         .catch((error) => console.error("Error fetching playlists:", error));
 }
 
-function displayPlaylistSelectionModal(songId, playlists) {
+function displayPlaylistSelectionModal(songId, songTitle, playlists) {
     const playlistOptions = playlists
         .map((playlist) => `<option value="${playlist.id}">${playlist.name}</option>`)
         .join("");
@@ -75,7 +77,7 @@ function displayPlaylistSelectionModal(songId, playlists) {
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Select Playlist</h5>
+                        <h5 class="modal-title">Select Playlist for "${songTitle}"</h5>
                         <button type="button" class="close" onclick="closeModal()" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -106,7 +108,10 @@ function closeModal() {
 }
 
 function submitAddToPlaylist(songId, playlistId) {
-    playlistId = playlistId || document.getElementById("playlistSelect").value;
+    // If no playlistId is passed, use the selected one from the modal
+    if (!playlistId) {
+        playlistId = document.getElementById("playlistSelect").value;
+    }
 
     fetch(`/add_song_to_playlist`, {
         method: "POST",
@@ -116,7 +121,7 @@ function submitAddToPlaylist(songId, playlistId) {
         .then((response) => {
             if (response.ok) {
                 alert("Song added to playlist successfully!");
-                closeModal();
+                closeModal(); // Close the modal after successful addition
             } else {
                 alert("Failed to add song to playlist.");
             }

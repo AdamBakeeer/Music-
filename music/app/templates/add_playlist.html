@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Create Playlist and Add Songs</h2>
+    <form method="POST" action="{{ url_for('add_playlist') }}">
+        {{ form.hidden_tag() }}
+        
+        <div class="form-group">
+            <label for="playlist_name">Playlist Name</label>
+            {{ form.playlist_name(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            <label for="song1">Song 1</label>
+            {{ form.song1(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            <label for="song2">Song 2</label>
+            {{ form.song2(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            <label for="song3">Song 3</label>
+            {{ form.song3(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            <label for="song4">Song 4</label>
+            {{ form.song4(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            <label for="song5">Song 5</label>
+            {{ form.song5(class="form-control") }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create Playlist</button>
+    </form>
+{% endblock %}

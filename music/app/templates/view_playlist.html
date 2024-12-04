@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container mt-5">
+        <!-- Playlist Header -->
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h2 class="display-4">{{ playlist.name }}</h2>
+                <p class="lead">Created by: {{ playlist.user.firstname }} {{ playlist.user.lastname }}</p>
+            </div>
+        </div>
+
+        <!-- Songs List -->
+        <h3 class="mt-4 mb-3">Songs:</h3>
+        <div class="row">
+            {% for song in songs %}
+                <div class="col-12 col-md-4">
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ song.title }}</h5>
+                            <p class="card-text">by {{ song.artists[0].artist.artist_name }}</p>
+
+                            <!-- Remove Song Button (without form submission) -->
+                            <button type="button" class="btn btn-purple btn-block remove-song-btn" data-song-id="{{ song.song_id }}" data-playlist-id="{{ playlist.playlist_id }}">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        No songs in this playlist yet.
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $(".remove-song-btn").click(function() {
+                var songId = $(this).data("song-id");
+                var playlistId = $(this).data("playlist-id");
+
+                $.ajax({
+                    type: "POST",
+                    url: "/remove_song",  // Update this URL to match your route
+                    data: {
+                        song_id: songId,
+                        playlist_id: playlistId,
+                        _csrf_token: "{{ csrf_token() }}"  // Ensure CSRF token is included
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Remove the song's card from the DOM
+                            $("button[data-song-id='" + songId + "']").closest('.col-md-4').remove();
+                            alert('Song removed successfully!');
+                        } else {
+                            alert('Error removing song: ' + response.message);
+                        }
+                    },
+                    error: function() {
+                        alert('An error occurred while removing the song.');
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
