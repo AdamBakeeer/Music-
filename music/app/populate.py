@@ -1,10 +1,11 @@
 from app import app, db
-from  app.models import Artist, Song, SongArtist, Genre
+from app.models import Artist, Song, SongArtist, Genre
 import requests
 
 # Last.fm API configuration
 LASTFM_API_KEY = "404ef23228bb084db0c7f5114d94b8db"
 BASE_URL = "http://ws.audioscrobbler.com/2.0/"
+
 
 def fetch_top_artists(limit=50):
     """
@@ -31,12 +32,14 @@ def fetch_top_artists(limit=50):
         print(f"Error fetching artists: {response.status_code}")
         return []
 
+
 def fetch_top_tracks_for_artist_with_genres(artist_name, limit=20):
     """
-    Fetch the top tracks for a specific artist from Last.fm, including genres for each track,
+    Fetch the top tracks for a specific artist from Last.fm,
+    including genres for each track,
     and save genres to the Genre table.
     """
-    # Step 1: Fetch top tracks
+
     params = {
         "method": "artist.gettoptracks",
         "artist": artist_name,
@@ -47,32 +50,29 @@ def fetch_top_tracks_for_artist_with_genres(artist_name, limit=20):
     response = requests.get(BASE_URL, params=params)
     if response.status_code == 200:
         tracks = response.json().get("toptracks", {}).get("track", [])
-        
-        # Step 2: Fetch genres for each track
+
         enriched_tracks = []
         for track in tracks:
             track_name = track.get("name")
-            if not track_name:  # Skip tracks without a name
+            if not track_name:
                 continue
-            
-            # Generate a unique identifier for the track
+
             song_id = track.get("mbid") or f"{artist_name.replace(' ', '_').lower()}_{track_name.replace(' ', '_').lower()}"
 
-            # Fetch genres using the track.getTopTags endpoint
             genres = fetch_genres_for_track(artist_name, track_name)
-            
-            # Save genres to the database
+
             save_genres_to_db(genres)
 
             enriched_tracks.append({
                 "song_id": song_id,
                 "title": track_name,
-                "genres": genres  # List of genres for this track
+                "genres": genres
             })
         return enriched_tracks
     else:
         print(f"Error fetching tracks for {artist_name}: {response.status_code} - {response.text}")
         return []
+
 
 def fetch_genres_for_track(artist_name, track_name):
     """
@@ -88,11 +88,12 @@ def fetch_genres_for_track(artist_name, track_name):
     response = requests.get(BASE_URL, params=params)
     if response.status_code == 200:
         tags = response.json().get("toptags", {}).get("tag", [])
-        # Return a list of genre names
+
         return [tag.get("name") for tag in tags]
     else:
         print(f"Error fetching genres for track {track_name}: {response.status_code} - {response.text}")
         return []
+
 
 def save_genres_to_db(genres):
     """
@@ -107,6 +108,7 @@ def save_genres_to_db(genres):
             db.session.add(new_genre)
     db.session.commit()
 
+
 def populate_database():
     """
     Populate the database with top artists, their tracks, and genres.
@@ -116,8 +118,7 @@ def populate_database():
 
     for artist in top_artists:
         print(f"Processing artist: {artist['artist_name']} ({artist['artist_id']})")
-        
-        # Save artist to the database
+
         existing_artist = Artist.query.filter_by(artist_id=artist["artist_id"]).first()
         if not existing_artist:
             new_artist = Artist(
@@ -126,8 +127,8 @@ def populate_database():
                 listeners=artist["listeners"]
             )
             db.session.add(new_artist)
-        
-        # Fetch and save tracks and genres
+  
+
         tracks = fetch_top_tracks_for_artist_with_genres(artist["artist_name"], limit=20)
         for track in tracks:
             existing_song = Song.query.filter_by(song_id=track["song_id"]).first()
@@ -135,11 +136,10 @@ def populate_database():
                 new_song = Song(
                     song_id=track["song_id"],
                     title=track["title"],
-                    genre=None  # Set genre later or as needed
+                    genre=None
                 )
                 db.session.add(new_song)
-            
-            # Associate songs with artists
+
             song_artist = SongArtist.query.filter_by(song_id=track["song_id"], artist_id=artist["artist_id"]).first()
             if not song_artist:
                 new_song_artist = SongArtist(

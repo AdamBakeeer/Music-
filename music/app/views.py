@@ -1,18 +1,14 @@
 from app import app, db
-from flask import render_template, flash, request, jsonify, redirect, url_for, session
+from flask import render_template, flash, session
+from flask import request, jsonify, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.models import User, Artist, Song, Playlist, PlaylistSong, UserArtist, UserGenre, Genre, SongArtist, Chat
-from app.forms import SignupForm, LoginForm, PlaylistForm, DeleteAccountForm, CSRFProtectedForm, AddSongsForm, SongRemoveForm
+from app.models import User, Artist, Song, Playlist
+from app.models import PlaylistSong, UserArtist, UserGenre, Genre, SongArtist
+from app.forms import SignupForm, LoginForm
+from app.forms import PlaylistForm, CSRFProtectedForm, AddSongsForm
 import re
-from flask_wtf.csrf import CSRFProtect
-from flask_wtf import FlaskForm
 from flask import g
 import pylast
-
-
-# Last.fm API credentials
-
-
 
 
 # Last.fm API key
@@ -20,16 +16,17 @@ LASTFM_API_KEY = "404ef23228bb084db0c7f5114d94b8db"
 BASE_URL = "http://ws.audioscrobbler.com/2.0/"
 network = pylast.LastFMNetwork(api_key=LASTFM_API_KEY, api_secret=None)
 
+
 def get_user_by_id(user_id):
     return User.query.filter_by(user_id=user_id).first()
 
+
 @app.before_request
 def before_request():
-    # Assuming you store the user ID in the session after login
-    user_id = session.get('user_id')  # Retrieve user_id from session
+    session.permanent = False  # Make the session temporary
+    user_id = session.get('user_id')
     if user_id:
-        # Query the database or API to get the user object (example)
-        g.user = get_user_by_id(user_id)  # Replace this with your actual method to get user data
+        g.user = get_user_by_id(user_id)
     else:
         g.user = None
 
@@ -37,32 +34,31 @@ def before_request():
 @app.route('/')
 def index():
     playlists = []
-    recommended_songs = []  # Initialize recommended_songs as an empty list
+    recommended_songs = []
     form = PlaylistForm()
     user = None
-    top_tracks = get_weekly_top_tracks()  # Fetch the top tracks of the week
+    top_tracks = get_weekly_top_tracks()
 
     if 'user_id' in session:
         user = User.query.get(session['user_id'])
         playlists = Playlist.query.filter_by(user_id=session['user_id']).all()
 
-        # Get user's preferred artists from the UserArtist table
         user_artists = UserArtist.query.filter_by(user_id=user.user_id).all()
         preferred_artists_ids = [user_artist.artist_id for user_artist in user_artists]
 
-        # For each artist, get a song associated with them
-        for artist_id in preferred_artists_ids[:3]:  # Limit to 3 artists initially
-            song = Song.query.join(SongArtist).filter(SongArtist.artist_id == artist_id).first()
+        for artist_id in preferred_artists_ids[:3]:
+            song = Song.query.join(SongArtist).filter(
+                SongArtist.artist_id == artist_id).first()
 
             if song:
-                # Check if the song is already in any of the user's playlists
-                song_in_playlist = PlaylistSong.query.filter_by(song_id=song.song_id).join(Playlist).filter(Playlist.user_id == user.user_id).first()
+                song_in_playlist = PlaylistSong.query.filter_by(
+                    song_id=song.song_id).join(
+                    Playlist).filter(Playlist.user_id == user.user_id).first()
 
-                if not song_in_playlist:  # If the song is not in the playlist
+                if not song_in_playlist:
                     recommended_songs.append(song)
 
-
-    return render_template('home.html', playlists=playlists, form=form, user=user, top_tracks=top_tracks, recommended_songs=recommended_songs)
+    return render_template('home.html',playlists=playlists, form=form, user=user,top_tracks=top_tracks, recommended_songs=recommended_songs)
 
 
 @app.route('/sign', methods=['GET', 'POST'])
@@ -126,6 +122,7 @@ def signup():
             return render_template('signup.html', form=form)
     return render_template('signup.html', form=form)
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -137,7 +134,7 @@ def login():
         # Check if identifier is an email or username
         is_email = re.match(r"[^@]+@[^@]+\.[^@]+", identifier)
         user = None
-        
+
         if is_email:
             user = User.query.filter_by(email=identifier).first()
         else:
@@ -154,7 +151,6 @@ def login():
     return render_template('login.html', form=form)
 
 
-
 @app.route('/profile/<int:user_id>', methods=['GET', 'POST'])
 def profile(user_id):
     user = User.query.get_or_404(user_id)
@@ -168,6 +164,7 @@ def profile(user_id):
 
     return render_template('profile.html', user=user, form=form, artists=artists, genres=genres)
 
+
 @app.route('/change_username', methods=['POST'])
 def change_username():
     new_username = request.form['username']
@@ -176,6 +173,7 @@ def change_username():
     db.session.commit()
     flash('Username updated successfully!', 'success')
     return redirect(url_for('profile', user_id=user.user_id))
+
 
 @app.route('/change_password', methods=['POST'])
 def change_password():
@@ -191,6 +189,7 @@ def change_password():
     db.session.commit()
     flash('Password updated successfully!', 'success')
     return redirect(url_for('profile', user_id=user.user_id))
+
 
 @app.route('/change_preferences', methods=['POST'])
 def change_preferences():
@@ -210,6 +209,7 @@ def change_preferences():
     flash('Preferences updated successfully!', 'success')
     return redirect(url_for('profile', user_id=user.user_id))
 
+
 @app.route('/delete_account', methods=['POST'])
 def delete_account():
     user_id = session.get('user_id')
@@ -228,25 +228,25 @@ def delete_account():
         flash('User not found.', 'danger')
         return redirect(url_for('profile', user_id=user_id))
 
+
 @app.route('/logout', methods=['POST'])
 def logout():
     session.pop('user_id', None)
     flash('Logged out successfully.', 'success')
     return redirect(url_for('index'))
 
+
 @app.route('/search_song', methods=['GET'])
 def search_song():
     query = request.args.get('query', '')
     if query:
-        # Perform a query to get songs based on title search
         songs = Song.query.filter(Song.title.contains(query)).all()
 
         song_list = []
         for song in songs:
-            # Fetch all artists associated with the song using the SongArtist table
             artist_names = []
             song_artists = SongArtist.query.filter_by(song_id=song.song_id).all()
-            
+ 
             for song_artist in song_artists:
                 artist = Artist.query.get(song_artist.artist_id)
                 if artist:
@@ -255,13 +255,12 @@ def search_song():
             song_list.append({
                 'id': song.song_id,
                 'title': song.title,
-                'artists': artist_names  # Include the list of artist names
+                'artists': artist_names
             })
 
         return jsonify({'songs': song_list})
 
     return render_template('search.html')
-
 
 
 @app.route('/confirm_delete', methods=['GET', 'POST'])
@@ -283,6 +282,7 @@ def confirm_delete():
         return redirect(url_for('index'))
 
     return render_template('conf_del.html', user=user, form=form)
+
 
 @app.route('/add_playlist', methods=['GET', 'POST'])
 def add_playlist():
@@ -309,7 +309,7 @@ def add_playlist():
 
             # Get selected songs from the form
             song_ids = [form.song1.data, form.song2.data, form.song3.data, form.song4.data, form.song5.data]
-            
+
             # Add each song to the playlist (ensure no duplicates)
             for song_id in set(song_ids):
                 song = Song.query.get(song_id)
@@ -328,14 +328,15 @@ def add_playlist():
 
     return render_template('add_playlist.html', form=form)
 
+
 @app.route('/view_playlist/<int:playlist_id>', methods=['GET', 'POST'])
 def view_playlist(playlist_id):
     if 'user_id' not in session:
-        return redirect(url_for('login'))  # Redirect to login page if user is not logged in
+        return redirect(url_for('login'))
 
     # Fetch the playlist
     playlist = Playlist.query.get_or_404(playlist_id)
-    
+
     # Check if the current user is the owner of the playlist
     if playlist.user_id != session['user_id']:
         return jsonify({'success': False, 'message': 'You are not the owner of this playlist'}), 403
@@ -371,7 +372,7 @@ def remove_song():
     data = request.get_json()
     song_id = data.get('song_id')
     playlist_id = data.get('playlist_id')
-    
+
     # Find the song and playlist objects
     song = Song.query.get(song_id)
     playlist = Playlist.query.get(playlist_id)
@@ -395,20 +396,21 @@ def remove_song():
     else:
         return jsonify({'success': False, 'message': 'Song not found in playlist'})
 
-    
+
 def get_weekly_top_tracks():
     # Fetch the top tracks globally
     tracks = network.get_top_tracks()
     top_tracks = []
-    
+
     # Collect track details (e.g., name, artist, URL, image)
     for track in tracks:
         top_tracks.append({
             'name': track.item.title,
             'artist': track.item.artist.name
         })
-    
+
     return top_tracks
+
 
 @app.route('/add_to_playlist', methods=['POST'])
 def add_to_playlist():
@@ -435,16 +437,16 @@ def add_to_playlist():
 
     return redirect(url_for('index'))
 
+
 @app.route('/add_to_playlist2', methods=['POST'])
 def add_to_playlist2():
     playlist_id = request.form.get('playlist_id')
-    song_title = request.form.get('song_title')  # Get the song title from the form
+    song_title = request.form.get('song_title')
 
     if not playlist_id or not song_title:
         flash('Missing playlist or song information.', 'danger')
-        return redirect(url_for('index'))  # Or wherever you want to redirect
+        return redirect(url_for('index'))
 
-    # Find the song by title
     song = Song.query.filter_by(title=song_title).first()
 
     if not song:
@@ -470,23 +472,23 @@ def add_to_playlist2():
         db.session.commit()
         flash(f'Song "{song_title}" added to playlist!', 'success')
 
-    return redirect(url_for('index'))  # Or redirect to another page like view_playlist
+    return redirect(url_for('index'))
+
 
 @app.route('/view_artist_songs/<artist_id>', methods=['GET'])
 def view_artist_songs(artist_id):
     artist = Artist.query.get(artist_id)
     if artist:
-        # Fetch all songs associated with this artist
         songs = Song.query.join(SongArtist).filter(SongArtist.artist_id == artist.artist_id).all()
         return render_template('artist_songs.html', artist=artist, songs=songs)
     else:
         return "Artist not found", 404
 
+
 @app.route('/search_artist', methods=['GET'])
 def search_artist():
     query = request.args.get('query', '')
     if query:
-        # Perform a query to get artists based on the search query
         artists = Artist.query.filter(Artist.artist_name.contains(query)).all()
 
         artist_list = []

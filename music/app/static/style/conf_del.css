@@ -1,0 +1,61 @@
+body {
+    background-color: #222;
+    color: white;
+}
+
+/* Back to Profile Button */
+.btn-secondary {
+    background-color: #6a0dad;
+    border-color: #6a0dad;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a008f;
+    border-color: #5a008f;
+}
+
+/* Main Content Section Styling */
+.content {
+    margin-top: 60px;
+    padding-bottom: 80px; /* Ensure content isn't hidden behind the footer */
+}
+
+/* Card Styling */
+.card {
+    background-color: #333;
+    color: white;
+    border: 2px solid #6a0dad;
+}
+
+.card-body {
+    padding: 30px;
+}
+
+.card-title {
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+/* Button Styling */
+.btn-purple {
+    background-color: #6a0dad;
+    border-color: #6a0dad;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #5a008f;
+    border-color: #5a008f;
+}
+
+.btn-danger {
+    background-color: #d9534f;
+    border-color: #d9534f;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c9302c;
+    border-color: #c9302c;
+}

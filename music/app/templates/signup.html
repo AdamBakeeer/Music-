@@ -5,68 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/sign.css') }}">
 </head>
 <body>
+    <!-- Header Section -->
+    <header style="background: linear-gradient(to right, #6a0dad, #2a002a); color: white;">
+        <div class="container py-3">
+            <h1>Adamtify</h1>
+        </div>
+    </header>
+
+    <!-- Main Sign-Up Form -->
     <div class="container mt-5">
-        <h1>Sign Up</h1>
+        <h1 class="text-center">Sign Up</h1>
+        <hr>
+
         <form method="POST">
             {{ form.hidden_tag() }}
 
             <!-- User Information -->
-            <div class="form-group">
-                {{ form.first_name.label }}
-                {{ form.first_name(class="form-control") }}
-            </div>
-            <div class="form-group">
-                {{ form.last_name.label }}
-                {{ form.last_name(class="form-control") }}
-            </div>
-            <div class="form-group">
-                {{ form.email.label }}
-                {{ form.email(class="form-control") }}
-            </div>
-            <div class="form-group">
-                {{ form.username.label }}
-                {{ form.username(class="form-control") }}
-            </div>
-            <div class="form-group">
-                {{ form.password.label }}
-                {{ form.password(class="form-control") }}
+            <div class="form-section">
+                <h3>User Information</h3>
+                <div class="form-group">
+                    {{ form.first_name.label }}
+                    {{ form.first_name(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.last_name.label }}
+                    {{ form.last_name(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.email.label }}
+                    {{ form.email(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.username.label }}
+                    {{ form.username(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.password.label }}
+                    {{ form.password(class="form-control") }}
+                </div>
             </div>
 
             <!-- Preferred Artists -->
-            <h3>Preferred Artists</h3>
-            <div class="form-group">
-                {{ form.artist1.label }}
-                {{ form.artist1(class="form-control") }}
-            </div>
-            <div class="form-group">
-                {{ form.artist2.label }}
-                {{ form.artist2(class="form-control") }}
-            </div>
-            <div class="form-group">
-                {{ form.artist3.label }}
-                {{ form.artist3(class="form-control") }}
+            <div class="form-section">
+                <h3>Preferred Artists</h3>
+                <div class="form-group">
+                    {{ form.artist1.label }}
+                    {{ form.artist1(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.artist2.label }}
+                    {{ form.artist2(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.artist3.label }}
+                    {{ form.artist3(class="form-control") }}
+                </div>
             </div>
 
             <!-- Preferred Genres -->
-            <h3>Preferred Genres</h3>
-            <div class="form-group">
-                {{ form.genre1.label }}
-                {{ form.genre1(class="form-control") }}
-            </div>
-            <div class="form-group">
-                {{ form.genre2.label }}
-                {{ form.genre2(class="form-control") }}
-            </div>
-            <div class="form-group">
-                {{ form.genre3.label }}
-                {{ form.genre3(class="form-control") }}
+            <div class="form-section">
+                <h3>Preferred Genres</h3>
+                <div class="form-group">
+                    {{ form.genre1.label }}
+                    {{ form.genre1(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.genre2.label }}
+                    {{ form.genre2(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.genre3.label }}
+                    {{ form.genre3(class="form-control") }}
+                </div>
             </div>
 
             <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
+            <button type="submit" class="btn btn-purple btn-block mt-3">{{ form.submit.label }}</button>
         </form>
+
         <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -80,5 +99,14 @@
         {% endif %}
         {% endwith %}
     </div>
+
+    <!-- Footer Section -->
+    <footer>
+        <p>@Aditmy</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
 </body>
 </html>

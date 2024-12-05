@@ -1,40 +1,56 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2>Create Playlist and Add Songs</h2>
-    <form method="POST" action="{{ url_for('add_playlist') }}">
-        {{ form.hidden_tag() }}
-        
-        <div class="form-group">
-            <label for="playlist_name">Playlist Name</label>
-            {{ form.playlist_name(class="form-control") }}
-        </div>
+<div class="container mt-5">
+    <h2 class="text-center">Create Playlist and Add Songs</h2>
+    <hr>
 
-        <div class="form-group">
-            <label for="song1">Song 1</label>
-            {{ form.song1(class="form-control") }}
-        </div>
+    <div class="form-section">
+        <form method="POST" action="{{ url_for('add_playlist') }}">
+            {{ form.hidden_tag() }}
 
-        <div class="form-group">
-            <label for="song2">Song 2</label>
-            {{ form.song2(class="form-control") }}
-        </div>
+            <!-- Playlist Name -->
+            <div class="form-group">
+                <h3 class="text-center">Playlist Name</h3>
+                {{ form.playlist_name(class="form-control") }}
+            </div>
+            
+            <!-- Songs Section -->
+            <h3 class="text-center">Add Songs</h3>
+            <div class="form-group">
+                <label for="song1">Song 1</label>
+                {{ form.song1(class="form-control") }}
+            </div>
 
-        <div class="form-group">
-            <label for="song3">Song 3</label>
-            {{ form.song3(class="form-control") }}
-        </div>
+            <div class="form-group">
+                <label for="song2">Song 2</label>
+                {{ form.song2(class="form-control") }}
+            </div>
 
-        <div class="form-group">
-            <label for="song4">Song 4</label>
-            {{ form.song4(class="form-control") }}
-        </div>
+            <div class="form-group">
+                <label for="song3">Song 3</label>
+                {{ form.song3(class="form-control") }}
+            </div>
 
-        <div class="form-group">
-            <label for="song5">Song 5</label>
-            {{ form.song5(class="form-control") }}
-        </div>
+            <div class="form-group">
+                <label for="song4">Song 4</label>
+                {{ form.song4(class="form-control") }}
+            </div>
 
-        <button type="submit" class="btn btn-primary">Create Playlist</button>
-    </form>
+            <div class="form-group">
+                <label for="song5">Song 5</label>
+                {{ form.song5(class="form-control") }}
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-purple btn-block mt-3">Create Playlist</button>
+        </form>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="mt-auto">
+    <p class="text-center" style="color: white;">@Aditmy</p>
+</footer>
+
 {% endblock %}

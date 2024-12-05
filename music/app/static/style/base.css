@@ -1,22 +1,19 @@
-/* Header styles */
 header {
     background-color: #6a0dad;
     padding: 10px 0;
     color: white;
 }
 
-/* Section alignment */
 .section1, .section2, .section3 {
     text-align: center;
 }
 
 .section2 p {
-    font-size: 2.5em;  /* Increase the font size */
-    margin-top: 10px;  /* Move the title down (adjust this value as needed) */
-    text-align: center;  /* Optionally, center the title horizontally */
+    font-size: 2.5em;
+    margin-top: 10px;
+    text-align: center;
 }
 
-/* Profile picture styles */
 .profile-pic {
     width: 50px;
     height: 50px;
@@ -24,7 +21,6 @@ header {
     object-fit: cover;
 }
 
-/* Login icon styles */
 .nav-image {
     width: 50px;
     height: 50px;
@@ -68,7 +64,6 @@ h1 {
     z-index: 1000;
 }
 
-/* General Layout */
 .playlist-container {
     text-align: center;
     padding: 20px;
@@ -89,7 +84,6 @@ h1 {
     margin-bottom: 20px;
 }
 
-/* Song List */
 .songs-list {
     display: flex;
     flex-wrap: wrap;
@@ -137,7 +131,6 @@ h1 {
     background-color: #c0392b;
 }
 
-/* No songs message */
 .no-songs {
     font-size: 1.2rem;
     color: #888;
@@ -155,7 +148,6 @@ h1 {
     border-color: #54088e;
 }
 
-/* Add styles to center cards, add spacing, and style modal */
 .card {
     border: none;
     border-radius: 10px;
@@ -199,11 +191,10 @@ h1 {
 }
 
 .home-icon {
-    width: 15%;  /* Make the icon smaller */
-    height: auto;  /* Maintain the aspect ratio */
+    width: 15%;
+    height: auto;
 }
 
-/* Style for the chat interface */
 .chat-container {
     position: fixed;
     bottom: 0;
@@ -254,7 +245,7 @@ h1 {
 }
 
 .purple-footer {
-    background-color: #800080; /* Purple color */
+    background-color: #800080;
     color: white;
     padding: 10px 0;
 }
@@ -272,7 +263,7 @@ h1 {
 }
 
 .chat-header {
-    background-color: #800080; /* Purple header */
+    background-color: #800080;
     color: white;
     padding: 10px;
     display: flex;
@@ -315,7 +306,7 @@ h1 {
 }
 
 #chatContainer {
-    display: none;  /* Hidden by default */
+    display: none;
     position: fixed;
     bottom: 0;
     right: 0;
@@ -327,9 +318,8 @@ h1 {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Chat Modal Styles */
 .chat-modal {
-    display: none;  /* Hidden by default */
+    display: none;
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -349,7 +339,7 @@ h1 {
 .chat-header {
     display: flex;
     justify-content: space-between;
-    background-color: #800080; /* Purple header */
+    background-color: #800080;
     color: white;
     padding: 10px;
     border-radius: 8px 8px 0 0;
@@ -386,7 +376,6 @@ h1 {
     background-color: #f9f9f9;
 }
 
-/* Buttons in purple */
 .btn-purple {
     background-color: #6a0dad;
     border-color: #6a0dad;
@@ -398,7 +387,6 @@ h1 {
     border-color: #5a008f;
 }
 
-/* Footer Style */
 footer {
     background-color: #6a0dad;
     color: white;
@@ -407,4 +395,41 @@ footer {
     position: relative;
     bottom: 0;
     width: 100%;
+}
+
+.form-section {
+    border: 2px solid #6a0dad;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #f9f9f9;
+}
+
+.btn-purple {
+    background-color: #6a0dad;
+    border-color: #6a0dad;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #5a008f;
+    border-color: #5a008f;
+}
+
+footer {
+    background-color: #6a0dad;
+    color: white;
+    padding: 15px 0;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+h3.text-center {
+    margin-bottom: 15px;
+}
+
+.container {
+    padding-bottom: 80px;
 }
