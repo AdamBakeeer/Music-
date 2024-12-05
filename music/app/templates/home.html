@@ -1,65 +1,86 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="container mt-5">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-3">
-                <a href="{{ url_for('add_playlist') }}" class="btn btn-primary mb-3">
-                    + Add Playlist
-                </a>
-                <h5>Your Playlists</h5>
-                <ul class="list-group">
-                    {% if playlists %}
-                        {% for playlist in playlists %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                {{ playlist.name }}
-                                <a href="{{ url_for('view_playlist', playlist_id=playlist.playlist_id) }}" class="btn btn-secondary btn-sm">View</a>
-                            </li>
+<div class="container mt-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <a href="{{ url_for('add_playlist') }}" class="btn btn-primary mb-3 w-100" style="background-color: #6a0dad; border-color: #6a0dad;">
+                + Add Playlist
+            </a>
+            <h5 class="text-dark">Your Playlists</h5>
+            <ul class="list-group">
+                {% if playlists %}
+                    {% for playlist in playlists %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ playlist.name }}
+                            <a href="{{ url_for('view_playlist', playlist_id=playlist.playlist_id) }}" class="btn btn-secondary btn-sm">View</a>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="list-group-item">No playlists available.</li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <h1 class="text-dark">Welcome to Adamtify</h1>
+            <hr class="border-purple">
+
+            <!-- Search Section -->
+            <h3 class="text-dark">Search for Songs</h3>
+            <a href="{{ url_for('search_song') }}" class="btn btn-primary mb-3" style="background-color: #6a0dad; border-color: #6a0dad;">
+                Go to Song Search
+            </a>
+
+            <h3 class="text-dark mt-4">Search for Artists</h3>
+            <a href="{{ url_for('search_artist') }}" class="btn btn-secondary mb-3" style="background-color: #b18fcf; border-color: #b18fcf;">
+                Go to Artist Search
+            </a>
+
+            <!-- Recommended Songs Section -->
+            <div class="mt-4 p-4" style="border: 2px solid #6a0dad; border-radius: 8px;">
+                <h3 class="text-dark">Recommended Songs for You</h3>
+                <ul class="list-unstyled mt-3">
+                    {% if recommended_songs %}
+                        {% for song in recommended_songs %}
+                            {% if song %}
+                                <li class="d-flex justify-content-between align-items-center py-2" style="color: #6a0dad;">
+                                    <span><strong>{{ song.title }}</strong> by {{ song.artists[0].artist.artist_name }}</span>
+                                    <form action="{{ url_for('add_to_playlist2') }}" method="POST" class="d-flex">
+                                        {{ form.hidden_tag() }} <!-- Flask-WTF CSRF protection -->
+                                        <input type="hidden" name="song_title" value="{{ song.title }}">
+                                        <select class="form-select form-select-sm me-2" name="playlist_id" style="max-width: 150px;">
+                                            <option value="">Select Playlist</option>
+                                            {% for playlist in playlists %}
+                                                <option value="{{ playlist.playlist_id }}">{{ playlist.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <button type="submit" class="btn btn-primary btn-sm" style="background-color: #6a0dad; border-color: #6a0dad;">Add</button>
+                                    </form>
+                                </li>
+                            {% endif %}
                         {% endfor %}
                     {% else %}
-                        <li class="list-group-item">No playlists available.</li>
+                        <li class="text-center text-muted">No song recommendations available.</li>
                     {% endif %}
                 </ul>
             </div>
 
-            <!-- Main Content -->
-            <div class="col-md-9">
-                <h1>Welcome to Adamtify</h1>
-                <hr>
-                <h3>Search for Songs</h3>
-                <a href="{{ url_for('search') }}" class="btn btn-primary">Go to Song Search</a>
-
-                <h3 class="mt-4">Search for Artists</h3>
-                <a href="{{ url_for('search_artist') }}" class="btn btn-secondary">Go to Artist Search</a>
-
-                <!-- Recommended Songs Section -->
-                <h3 class="mt-4">Recommended Songs for You</h3>
-                <ul class="list-group">
-                    {% if recommended_songs %}
-                        {% for song in recommended_songs %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <strong>{{ song.title }}</strong> by {{ song.artists[0].artist.artist_name }}
-                                <a href="{{ url_for('add_to_playlist', song_id=song.song_id) }}" class="btn btn-sm btn-primary">Add to Playlist</a>
-                            </li>
-                        {% endfor %}
-                    {% else %}
-                        <li class="list-group-item">No song recommendations available.</li>
-                    {% endif %}
-                </ul>
-
-
-                <h3 class="mt-4">Top 10 Tracks of the Week</h3>
-                <ol class="list-group">
+            <!-- Top Tracks Section -->
+            <div class="mt-4 p-4" style="border: 2px solid #6a0dad; border-radius: 8px; margin-bottom: 5%;">
+                <h3 class="text-dark">Top 10 Tracks of the Week</h3>
+                <ul class="list-unstyled mt-3">
                     {% for track in top_tracks[:10] %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ loop.index }}. {{ track.name }} <br>
-                            <span class="text-muted">by {{ track.artist }}</span>
-                            <a href="{{ track.url }}" class="btn btn-primary btn-sm" target="_blank">Listen</a>
+                        <li class="d-flex justify-content-between align-items-center py-2" style="color: #6a0dad;">
+                            <span><strong>{{ loop.index }}.</strong> {{ track.name }} <br>
+                            <span class="text-muted">by {{ track.artist }}</span></span>
                         </li>
                     {% endfor %}
-                </ol>
+                </ul>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}

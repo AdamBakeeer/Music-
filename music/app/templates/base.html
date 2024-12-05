@@ -11,26 +11,27 @@
 </head>
 <body>
     <!-- Always Visible Header -->
-    <header>
-        <div class="container">
+    <header style="background: linear-gradient(to right, #6a0dad, #2a002a); color: white;">
+        <div class="container py-3">
             <div class="row align-items-center">
                 <div class="col-4 section1">
                     <a href="{{ url_for('index') }}">
-                        <img src="{{ url_for('static', filename='images/home-icon.png') }}" alt="Home" class="home-icon"> <!-- Replace with your image -->
+                        <img src="{{ url_for('static', filename='images/home-icon.png') }}" alt="Home" class="home-icon img-fluid" style="max-width: 3rem;">
                     </a>
                 </div>
-                <div class="col-4 section2">
-                    <p>Adamtify</p>
+                <div class="col-4 section2 text-center">
+                    <h1 style="font-weight: bold; font-size: 1.5rem; color: white;">Adamtify</h1>
                 </div>
-                <div class="col-4 section3">
+                <div class="col-4 section3 text-end">
                     {% if g.user %}
                         <a href="{{ url_for('profile', user_id=g.user.user_id) }}">
                             <img src="https://ui-avatars.com/api/?name={{ g.user.firstname }}+{{ g.user.lastname }}&size=200&background=random" 
-                                 alt="Profile Picture" class="profile-pic">
+                                 alt="Profile Picture" class="profile-pic img-fluid rounded-circle" style="max-width: 3rem;">
                         </a>
                     {% else %}
-                        <a href="{{ url_for('login') }}" class="nav-link">
-                            <img src="{{ url_for('static', filename='images/login-nobck.png') }}" alt="Login" class="nav-image">
+                        <a href="{{ url_for('login') }}">
+                            <img src="{{ url_for('static', filename='images/login-nobck.png') }}" 
+                                 alt="Login" class="nav-image img-fluid rounded-circle" style="max-width: 3rem;">
                         </a>
                     {% endif %}
                 </div>
@@ -40,24 +41,11 @@
 
     {% block content %}{% endblock %}
 
-    <!-- Footer with Chat Button -->
+    <!-- Footer Section -->
     <footer>
-        <div class="container text-center">
-            <button id="chatButton" class="btn btn-primary">Chat with MusicBot</button>
-        </div>
+        <p>@Aditmy</p>
     </footer>
-
-    <!-- Chat Interface (Initially hidden) -->
-    <div id="chatContainer" class="chat-container">
-        <div class="chat-header">
-            <h5>MusicBot</h5>
-            <button id="closeChat" class="btn-close" aria-label="Close"></button>
-        </div>
-        <div id="chatMessages" class="chat-messages"></div>
-        <input type="text" id="userMessage" class="chat-input" placeholder="Ask something...">
-        <button id="sendMessage" class="btn btn-primary">Send</button>
-    </div>
-
+    
     <!-- JavaScript includes -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"></script>

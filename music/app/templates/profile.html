@@ -3,115 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
+    <title>Your Profile</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style/base.css') }}">
+    <style>
+        /* Add purple borders around each section */
+        .profile-section {
+            border: 2px solid #6a0dad;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+
+        /* Buttons in purple */
+        .btn-purple {
+            background-color: #6a0dad;
+            border-color: #6a0dad;
+            color: white;
+        }
+
+        .btn-purple:hover {
+            background-color: #5a008f;
+            border-color: #5a008f;
+        }
+
+        /* Footer Style */
+        footer {
+            background-color: #6a0dad;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <!-- Back to Home Button -->
-        <div class="mb-3">
-            <a href="{{ url_for('index') }}" class="btn btn-secondary">← Back to Home</a>
+    <!-- Header Section -->
+    <header style="background: linear-gradient(to right, #6a0dad, #2a002a); color: white;">
+        <div class="container py-3">
+            <div class="row align-items-center">
+                <div class="col-4 section1">
+                    <a href="{{ url_for('index') }}">
+                        <img src="{{ url_for('static', filename='images/home-icon.png') }}" alt="Home" class="home-icon img-fluid" style="max-width: 3rem;">
+                    </a>
+                </div>
+                <div class="col-4 section2 text-center">
+                    <h1 style="font-weight: bold; font-size: 1.5rem; color: white;">Adamtify</h1>
+                </div>
+                <div class="col-4 section3 text-end">
+                    {% if g.user %}
+                        <a href="{{ url_for('profile', user_id=g.user.user_id) }}">
+                            <img src="https://ui-avatars.com/api/?name={{ g.user.firstname }}+{{ g.user.lastname }}&size=200&background=random" 
+                                 alt="Profile Picture" class="profile-pic img-fluid rounded-circle" style="max-width: 3rem;">
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}">
+                            <img src="{{ url_for('static', filename='images/login-nobck.png') }}" 
+                                 alt="Login" class="nav-image img-fluid rounded-circle" style="max-width: 3rem;">
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
         </div>
+    </header>
 
+    <!-- Main Profile Content -->
+    <div class="container mt-5">
         <h1>Your Profile</h1>
         <hr>
 
-        <!-- Username Change -->
-        <h3>Change Username</h3>
-        <form method="POST" action="{{ url_for('change_username') }}">
-            {{ form.hidden_tag() }}
-            <div class="form-group">
-                <label for="username">New Username</label>
-                <input type="text" id="username" name="username" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary mt-2">Update Username</button>
-        </form>
-        <hr>
+        <!-- Change Username Section -->
+        <div class="profile-section">
+            <h3>Change Username</h3>
+            <form method="POST" action="{{ url_for('change_username') }}">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    <label for="username">New Username</label>
+                    <input type="text" id="username" name="username" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-purple mt-2">Update Username</button>
+            </form>
+        </div>
 
-        <!-- Password Change -->
-        <h3>Change Password</h3>
-        <form method="POST" action="{{ url_for('change_password') }}">
-            {{ form.hidden_tag() }}
-            <div class="form-group">
-                <label for="current_password">Current Password</label>
-                <input type="password" id="current_password" name="current_password" class="form-control" required>
+        <!-- Change Password Section -->
+        <div class="profile-section">
+            <h3>Change Password</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <form method="POST" action="{{ url_for('change_password') }}">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group">
+                            <label for="current_password">Current Password</label>
+                            <input type="password" id="current_password" name="current_password" class="form-control" required>
+                        </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="new_password">New Password</label>
+                        <input type="password" id="new_password" name="new_password" class="form-control" required>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="new_password">New Password</label>
-                <input type="password" id="new_password" name="new_password" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary mt-2">Update Password</button>
-        </form>
-        <hr>
+            <button type="submit" class="btn btn-purple mt-2">Update Password</button>
+            </form>
+        </div>
 
-        <!-- Preferences Update -->
-        <h3>Change Preferences</h3>
-        <form method="POST" action="{{ url_for('change_preferences') }}">
-            {{ form.hidden_tag() }}
-            <div class="form-group">
-                <label for="artist1">Preferred Artist 1</label>
-                <select id="artist1" name="artist1" class="form-control" required>
-                    {% for artist_id, artist_name in artists %}
-                    <option value="{{ artist_id }}">{{ artist_name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="artist2">Preferred Artist 2</label>
-                <select id="artist2" name="artist2" class="form-control" required>
-                    {% for artist_id, artist_name in artists %}
-                    <option value="{{ artist_id }}">{{ artist_name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="artist3">Preferred Artist 3</label>
-                <select id="artist3" name="artist3" class="form-control" required>
-                    {% for artist_id, artist_name in artists %}
-                    <option value="{{ artist_id }}">{{ artist_name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="genre1">Preferred Genre 1</label>
-                <select id="genre1" name="genre1" class="form-control" required>
-                    {% for genre_id, genre_name in genres %}
-                    <option value="{{ genre_id }}">{{ genre_name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="genre2">Preferred Genre 2</label>
-                <select id="genre2" name="genre2" class="form-control" required>
-                    {% for genre_id, genre_name in genres %}
-                    <option value="{{ genre_id }}">{{ genre_name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="genre3">Preferred Genre 3</label>
-                <select id="genre3" name="genre3" class="form-control" required>
-                    {% for genre_id, genre_name in genres %}
-                    <option value="{{ genre_id }}">{{ genre_name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary mt-2">Update Preferences</button>
-        </form>
-        <hr>
+        <!-- Change Preferences Section -->
+        <div class="profile-section">
+            <h3>Change Preferences</h3>
+            <form method="POST" action="{{ url_for('change_preferences') }}">
+                {{ form.hidden_tag() }}
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="artist1">Preferred Artist 1</label>
+                            <select id="artist1" name="artist1" class="form-control" required>
+                                {% for artist_id, artist_name in artists %}
+                                    <option value="{{ artist_id }}">{{ artist_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="artist2">Preferred Artist 2</label>
+                            <select id="artist2" name="artist2" class="form-control" required>
+                                {% for artist_id, artist_name in artists %}
+                                    <option value="{{ artist_id }}">{{ artist_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="artist3">Preferred Artist 3</label>
+                            <select id="artist3" name="artist3" class="form-control" required>
+                                {% for artist_id, artist_name in artists %}
+                                    <option value="{{ artist_id }}">{{ artist_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="genre1">Preferred Genre 1</label>
+                            <select id="genre1" name="genre1" class="form-control" required>
+                                {% for genre_id, genre_name in genres %}
+                                    <option value="{{ genre_id }}">{{ genre_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="genre2">Preferred Genre 2</label>
+                            <select id="genre2" name="genre2" class="form-control" required>
+                                {% for genre_id, genre_name in genres %}
+                                    <option value="{{ genre_id }}">{{ genre_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="genre3">Preferred Genre 3</label>
+                            <select id="genre3" name="genre3" class="form-control" required>
+                                {% for genre_id, genre_name in genres %}
+                                    <option value="{{ genre_id }}">{{ genre_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-purple mt-2 w-100">Update Preferences</button>
+            </form>
+        </div>
 
-        <!-- Delete Account -->
-        <h3>Delete Account</h3>
-        <a href="{{ url_for('confirm_delete') }}" class="btn btn-danger mt-2">Delete Account</a>
-        <hr>
-
-        <!-- Logout -->
-        <form method="POST" action="{{ url_for('logout') }}">
-            {{ form.hidden_tag() }}
-            <button type="submit" class="btn btn-warning">Logout</button>
-        </form>
+        <!-- Delete Account and Logout Buttons Section -->
+        <div class="profile-section">
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <a href="{{ url_for('confirm_delete') }}" class="btn btn-danger w-100 btn-purple">Delete Account</a>
+                </div>
+                <div class="col-md-6">
+                    <form method="POST" action="{{ url_for('logout') }}">
+                        {{ form.hidden_tag() }}
+                        <button type="submit" class="btn btn-warning w-100 btn-purple">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Footer Section -->
+    <footer>
+        <p>@Aditmy</p>
+    </footer>
 
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

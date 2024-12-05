@@ -1,70 +1,66 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="container mt-5">
-        <!-- Playlist Header -->
-        <div class="row mb-4">
-            <div class="col-12 text-center">
-                <h2 class="display-4">{{ playlist.name }}</h2>
-                <p class="lead">Created by: {{ playlist.user.firstname }} {{ playlist.user.lastname }}</p>
-            </div>
-        </div>
-
-        <!-- Songs List -->
-        <h3 class="mt-4 mb-3">Songs:</h3>
-        <div class="row">
-            {% for song in songs %}
-                <div class="col-12 col-md-4">
-                    <div class="card mb-4 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ song.title }}</h5>
-                            <p class="card-text">by {{ song.artists[0].artist.artist_name }}</p>
-
-                            <!-- Remove Song Button (without form submission) -->
-                            <button type="button" class="btn btn-purple btn-block remove-song-btn" data-song-id="{{ song.song_id }}" data-playlist-id="{{ playlist.playlist_id }}">
-                                Remove
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            {% else %}
-                <div class="col-12">
-                    <div class="alert alert-info">
-                        No songs in this playlist yet.
-                    </div>
-                </div>
-            {% endfor %}
+<div class="container mt-5">
+    <!-- Playlist Header -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h2 class="display-4 text-dark">{{ playlist.name }}</h2>
+            <p class="lead text-muted">Created by: {{ playlist.user.firstname }} {{ playlist.user.lastname }}</p>
         </div>
     </div>
 
-    <script>
-        $(document).ready(function() {
-            $(".remove-song-btn").click(function() {
-                var songId = $(this).data("song-id");
-                var playlistId = $(this).data("playlist-id");
+    <!-- Add Song to Playlist -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <form action="{{ url_for('view_playlist', playlist_id=playlist.playlist_id) }}" method="POST" class="d-flex flex-column align-items-center">
+                <!-- CSRF Token -->
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
 
-                $.ajax({
-                    type: "POST",
-                    url: "/remove_song",  // Update this URL to match your route
-                    data: {
-                        song_id: songId,
-                        playlist_id: playlistId,
-                        _csrf_token: "{{ csrf_token() }}"  // Ensure CSRF token is included
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            // Remove the song's card from the DOM
-                            $("button[data-song-id='" + songId + "']").closest('.col-md-4').remove();
-                            alert('Song removed successfully!');
-                        } else {
-                            alert('Error removing song: ' + response.message);
-                        }
-                    },
-                    error: function() {
-                        alert('An error occurred while removing the song.');
-                    }
-                });
-            });
-        });
-    </script>
+                <div class="form-group w-75">
+                    <label for="songSelect" class="text-dark">Select a Song to Add</label>
+                    <select class="form-control" id="songSelect" name="song_id" style="border: 2px solid #6a0dad; color: #6a0dad;">
+                        <option value="">Select a song...</option>
+                        {% for song in available_songs %}
+                            <option value="{{ song.song_id }}">{{ song.title }} - {{ song.artists[0].artist.artist_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3" style="background-color: #6a0dad; border-color: #6a0dad;">Add to Playlist</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Existing Songs in Playlist -->
+    <h3 class="text-dark mb-4">Songs in this Playlist:</h3>
+    <div class="row">
+        {% for song in songs %}
+            <div class="col-12 col-sm-6 col-md-4 mb-4">
+                <div class="card h-100 shadow" style="border: 2px solid #6a0dad;">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <h5 class="card-title text-dark">{{ song.title }}</h5>
+                        <p class="card-text text-muted">by {{ song.artists[0].artist.artist_name }}</p>
+                        <!-- Remove Button -->
+                        <button type="button" class="btn remove-song-btn mt-3"
+                                data-song-id="{{ song.song_id }}" 
+                                data-playlist-id="{{ playlist.playlist_id }}"
+                                style="background-color: #6a0dad; color: white; border-color: #6a0dad;">
+                            Remove
+                        </button>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    No songs in this playlist yet.
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Link to external JavaScript file -->
+<script src="{{ url_for('static', filename='js/view.js') }}"></script>
+
 {% endblock %}

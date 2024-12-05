@@ -1,16 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="container mt-5">
-        <h1>{{ artist.name }}'s Songs</h1>
-        <ul class="list-group mt-3">
+<div class="container mt-5">
+    <h1 class="text-dark">Songs by {{ artist.artist_name }}</h1>
+    <ol class="list-group mt-4" style="border: 2px solid #6a0dad; border-radius: 8px; padding: 10px; background-color: #f9f9f9;">
+        {% if songs %}
             {% for song in songs %}
-                <li class="list-group-item">
-                    {{ song.title }}
+                <li class="list-group-item d-flex justify-content-between align-items-center" style="border: none; color: #6a0dad;">
+                    <span><strong>{{ loop.index }}.</strong> {{ song.title }}</span>
                 </li>
-            {% else %}
-                <li class="list-group-item">No songs available.</li>
             {% endfor %}
-        </ul>
-    </div>
+        {% else %}
+            <p class="text-center text-muted">No songs found for this artist.</p>
+        {% endif %}
+    </ol>
+</div>
 {% endblock %}

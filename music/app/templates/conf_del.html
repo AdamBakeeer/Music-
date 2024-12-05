@@ -6,10 +6,77 @@
     <title>Confirm Deletion</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style/base.css') }}">
+    <style>
+        body {
+            background-color: #222;
+            color: white;
+        }
+
+        /* Back to Profile Button */
+        .btn-secondary {
+            background-color: #6a0dad;
+            border-color: #6a0dad;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a008f;
+            border-color: #5a008f;
+        }
+
+        /* Main Content Section Styling */
+        .content {
+            margin-top: 60px;
+            padding-bottom: 80px; /* Ensure content isn't hidden behind the footer */
+        }
+
+        /* Card Styling */
+        .card {
+            background-color: #333;
+            color: white;
+            border: 2px solid #6a0dad;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .card-title {
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        /* Button Styling */
+        .btn-purple {
+            background-color: #6a0dad;
+            border-color: #6a0dad;
+            color: white;
+        }
+
+        .btn-purple:hover {
+            background-color: #5a008f;
+            border-color: #5a008f;
+        }
+
+        .btn-danger {
+            background-color: #d9534f;
+            border-color: #d9534f;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c9302c;
+            border-color: #c9302c;
+        }
+
+    </style>
 </head>
-<body style="background-color: #222; color: white;">
-    <div class="container mt-5">
-        <!-- Back Button -->
+<body>
+
+
+    <!-- Main Content -->
+    <div class="container content">
+        <!-- Back to Profile Button -->
         <div class="mb-3">
             <a href="{{ url_for('profile', user_id=session['user_id']) }}" class="btn btn-secondary">← Back to Profile</a>
         </div>
@@ -18,11 +85,10 @@
         <h1 class="text-center mb-4">Are you sure you want to delete your account?</h1>
 
         <!-- Playlist Section -->
-        <div class="card mb-3" style="background-color: #333; color: white; border: none;">
+        <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title text-center">Goodbye for now :(</h5>
+                <h5 class="card-title">Goodbye for now :(</h5>
                 <p class="card-text text-center">@Adamtify Cares</p>
-                <a href="https://www.spotify.com" target="_blank" class="btn btn-primary d-block mx-auto mb-3" style="width: 200px;">Save on Spotify</a>
 
                 <!-- Playlist Tracks -->
                 <ol class="list-group list-group-flush text-center">

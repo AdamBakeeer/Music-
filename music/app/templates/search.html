@@ -2,52 +2,25 @@
 
 {% block content %}
 <div class="container mt-5">
-    <div class="container mt-5">
-        <h3>Search for Songs</h3>
-        <div class="col-md-9">
-            <hr>
-            <h3>Search for songs</h3>
+    <!-- Search Bar -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h3 class="text-dark mb-4">Search for Songs</h3>
             <div class="search-bar">
-                <input type="text" id="mainSongSearch" placeholder="Search for a song..." class="form-control mb-3">
-                <ul id="mainSongDropdown" class="list-group">
-                    <!-- Songs will be dynamically populated here -->
-                </ul>
-            </div>
-        </div>
-        <!-- Song Results -->
-        <div class="row" id="songResults">
-            <!-- Songs will be dynamically populated here in cards -->
-        </div>
-    </div>
-    
-    <!-- Add to Playlist Form (Visible when the user clicks a song) -->
-    <div class="modal fade" id="addToPlaylistModal" tabindex="-1" aria-labelledby="addToPlaylistModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addToPlaylistModalLabel">Select Playlist</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="{{ url_for('add_to_playlist') }}" method="POST">
-                        <input type="hidden" name="song_id" id="songIdInput">
-                        <div class="form-group">
-                            <label for="playlistSelect">Select Playlist</label>
-                            <select id="playlistSelect" name="playlist_id" class="form-control">
-                                {% for playlist in playlists %}
-                                    <option value="{{ playlist.id }}">{{ playlist.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary mt-3">Add to Playlist</button>
-                    </form>
-                </div>
+                <input type="text" id="mainSongSearch" placeholder="Search for a song..." 
+                       class="form-control mb-3" style="border: 2px solid #6a0dad; color: #6a0dad; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
             </div>
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+    <!-- Dynamically Populated Song Results -->
+    <div class="row mt-4" id="songResults">
+        <!-- Songs will be dynamically populated here -->
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/search.js') }}"></script>
 
 {% endblock %}

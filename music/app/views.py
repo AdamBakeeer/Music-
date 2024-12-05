@@ -7,10 +7,18 @@ import re
 from flask_wtf.csrf import CSRFProtect
 from flask_wtf import FlaskForm
 from flask import g
-import pyl
+import pylast
+
+
+# Last.fm API credentials
+
+
+
+
 # Last.fm API key
 LASTFM_API_KEY = "404ef23228bb084db0c7f5114d94b8db"
 BASE_URL = "http://ws.audioscrobbler.com/2.0/"
+network = pylast.LastFMNetwork(api_key=LASTFM_API_KEY, api_secret=None)
 
 def get_user_by_id(user_id):
     return User.query.filter_by(user_id=user_id).first()
@@ -32,7 +40,7 @@ def index():
     recommended_songs = []  # Initialize recommended_songs as an empty list
     form = PlaylistForm()
     user = None
-    top_tracks = get_weekly_top_tracks()  # Assume this function fetches the top tracks of the week
+    top_tracks = get_weekly_top_tracks()  # Fetch the top tracks of the week
 
     if 'user_id' in session:
         user = User.query.get(session['user_id'])
@@ -43,8 +51,7 @@ def index():
         preferred_artists_ids = [user_artist.artist_id for user_artist in user_artists]
 
         # For each artist, get a song associated with them
-        for artist_id in preferred_artists_ids[:3]:  # Limit to 3 artists
-            # Fetch one song for the current artist
+        for artist_id in preferred_artists_ids[:3]:  # Limit to 3 artists initially
             song = Song.query.join(SongArtist).filter(SongArtist.artist_id == artist_id).first()
 
             if song:
@@ -54,14 +61,9 @@ def index():
                 if not song_in_playlist:  # If the song is not in the playlist
                     recommended_songs.append(song)
 
-    return render_template(
-        'home.html', 
-        playlists=playlists, 
-        form=form, 
-        user=user, 
-        top_tracks=top_tracks, 
-        recommended_songs=recommended_songs
-    )
+
+    return render_template('home.html', playlists=playlists, form=form, user=user, top_tracks=top_tracks, recommended_songs=recommended_songs)
+
 
 @app.route('/sign', methods=['GET', 'POST'])
 def signup():
@@ -132,17 +134,25 @@ def login():
         identifier = form.identifier.data.strip()
         password = form.password.data.strip()
 
+        # Check if identifier is an email or username
         is_email = re.match(r"[^@]+@[^@]+\.[^@]+", identifier)
-        user = User.query.filter_by(email=identifier).first() if is_email else User.query.filter_by(username=identifier).first()
+        user = None
+        
+        if is_email:
+            user = User.query.filter_by(email=identifier).first()
+        else:
+            user = User.query.filter_by(username=identifier).first()
 
+        # Validate user and password
         if user and check_password_hash(user.password_hash, password):
             session['user_id'] = user.user_id
-            flash('You are now logged in!', 'success')  # Flash a success message on successful login
+            flash('You are now logged in!', 'success')
             return redirect(url_for('index'))
         else:
-            flash('Invalid username/email or password. Please try again.', 'danger')  # Flash a danger message on login failure
+            flash('Invalid username/email or password. Please try again.', 'danger')
 
     return render_template('login.html', form=form)
+
 
 
 @app.route('/profile/<int:user_id>', methods=['GET', 'POST'])
@@ -226,12 +236,31 @@ def logout():
 
 @app.route('/search_song', methods=['GET'])
 def search_song():
-    query = request.args.get('query', '').strip()
-    if not query:
-        return jsonify([])
+    query = request.args.get('query', '')
+    if query:
+        # Perform a query to get songs based on title search
+        songs = Song.query.filter(Song.title.contains(query)).all()
 
-    matching_songs = Song.query.filter(Song.title.ilike(f"%{query}%")).all()
-    return jsonify([{"song_id": song.song_id, "title": song.title} for song in matching_songs])
+        song_list = []
+        for song in songs:
+            # Fetch all artists associated with the song using the SongArtist table
+            artist_names = []
+            song_artists = SongArtist.query.filter_by(song_id=song.song_id).all()
+            
+            for song_artist in song_artists:
+                artist = Artist.query.get(song_artist.artist_id)
+                if artist:
+                    artist_names.append(artist.artist_name)
+
+            song_list.append({
+                'id': song.song_id,
+                'title': song.title,
+                'artists': artist_names  # Include the list of artist names
+            })
+
+        return jsonify({'songs': song_list})
+
+    return render_template('search.html')
 
 
 
@@ -299,7 +328,6 @@ def add_playlist():
 
     return render_template('add_playlist.html', form=form)
 
-
 @app.route('/view_playlist/<int:playlist_id>', methods=['GET', 'POST'])
 def view_playlist(playlist_id):
     if 'user_id' not in session:
@@ -312,82 +340,62 @@ def view_playlist(playlist_id):
     if playlist.user_id != session['user_id']:
         return jsonify({'success': False, 'message': 'You are not the owner of this playlist'}), 403
 
-    # Fetch the songs in the playlist
+    # Fetch the songs already in the playlist
     songs = Song.query.join(PlaylistSong).filter(PlaylistSong.playlist_id == playlist_id).all()
 
-    # Create the form for CSRF protection
-    form = SongRemoveForm()  # You can create a form to handle CSRF token if necessary
+    # Fetch all available songs that are not in the playlist
+    available_songs = Song.query.filter(~Song.song_id.in_([song.song_id for song in songs])).all()
 
-    return render_template('view_playlist.html', playlist=playlist, songs=songs, form=form)
+    # Handle adding a song to the playlist
+    if request.method == 'POST':
+        song_id = request.form.get('song_id')  # Get the selected song's ID
+        song = Song.query.get(song_id)
+        if song:
+            # Add the song to the playlist
+            playlist_song = PlaylistSong(playlist_id=playlist.playlist_id, song_id=song.song_id)
+            db.session.add(playlist_song)
+            db.session.commit()
+            flash("Song added to playlist!", "success")
+            return redirect(url_for('view_playlist', playlist_id=playlist.playlist_id))  # Redirect to refresh the page
+
+    return render_template('view_playlist.html', playlist=playlist, songs=songs, available_songs=available_songs)
 
 
 @app.route('/remove_song', methods=['POST'])
 def remove_song():
+    # Check if the user is logged in
     if 'user_id' not in session:
         return jsonify({'success': False, 'message': 'User not logged in'})
 
-    song_id = request.form.get('song_id')
-    playlist_id = request.form.get('playlist_id')
+    # Get JSON data from the request body
+    data = request.get_json()
+    song_id = data.get('song_id')
+    playlist_id = data.get('playlist_id')
     
-    # Find the song and playlist
+    # Find the song and playlist objects
     song = Song.query.get(song_id)
     playlist = Playlist.query.get(playlist_id)
-    
+
     if not song or not playlist:
         return jsonify({'success': False, 'message': 'Song or Playlist not found'})
 
-    # Find the relationship between the song and the playlist
+    # Find the relationship between the song and the playlist in the PlaylistSong table
     playlist_song = PlaylistSong.query.filter_by(song_id=song_id, playlist_id=playlist_id).first()
-    
+
     if playlist_song:
-        db.session.delete(playlist_song)
-        db.session.commit()
-        return jsonify({'success': True})
+        try:
+            # Remove the song from the playlist
+            db.session.delete(playlist_song)
+            db.session.commit()
+            return jsonify({'success': True})  # Return success if removal was successful
+        except Exception as e:
+            db.session.rollback()  # Rollback transaction on error
+            print(f"Error removing song: {e}")
+            return jsonify({'success': False, 'message': 'Error removing song'})
     else:
-        return jsonify({'success': False, 'message': 'Song not in playlist'})
+        return jsonify({'success': False, 'message': 'Song not found in playlist'})
+
     
-@app.route('/search', methods=['GET', 'POST'])
-def search():
-
-    if request.method == 'POST':
-        search_query = request.form.get('search_query')
-        songs = Song.query.filter(Song.title.contains(search_query)).all()
-        song_list = [{
-            'id': song.id,
-            'title': song.title,
-            'artist': song.artist.name,  # Assuming 'artist' is a relation
-            'cover_url': song.cover_url  # Assuming a 'cover_url' field for the song cover image
-        } for song in songs]
-        return jsonify({'songs': song_list})
-
-    return render_template('search.html')
-
-  # You can change 'home' to the desired route
-
-@app.route('/artist_songs/<int:artist_id>')
-def artist_songs(artist_id):
-    # Assuming you have a model named Song related to Artist
-    artist = Artist.query.get_or_404(artist_id)
-    songs = Song.query.filter_by(artist_id=artist.id).all()
-    return render_template('artist_songs.html', artist=artist, songs=songs)
-
-@app.route('/search_artist')
-def search_artist():
-    query = request.args.get('query', '')
-    
-    if query:
-        # Assuming you have a model named Artist
-        artists = Artist.query.filter(Artist.name.ilike(f"%{query}%")).all()
-        artist_data = [{"id": artist.id, "name": artist.name} for artist in artists]
-        return jsonify(artist_data)
-    else:
-        return jsonify([]) 
-
-
-# Last.fm API credentials
-LASTFM_API_KEY = "404ef23228bb084db0c7f5114d94b8db"
-network = pylast.LastFMNetwork(api_key=LASTFM_API_KEY, api_secret=None)
-
 def get_weekly_top_tracks():
     # Fetch the top tracks globally
     tracks = network.get_top_tracks()
@@ -427,26 +435,67 @@ def add_to_playlist():
 
     return redirect(url_for('index'))
 
-@app.route('/ask_chatbot', methods=['POST'])
-def ask_chatbot():
-    user_message = request.form.get('message')
-    user_id = g.user.user_id  # Assuming the user is logged in and g.user contains user data
-    
-    # Use OpenAI API to get the response
-    try:
-        response = openai.Completion.create(
-            engine="text-davinci-003",  # You can replace with other models if necessary
-            prompt=f"Answer this music-related question: {user_message}",
-            max_tokens=150
-        )
-        answer = response.choices[0].text.strip()
+@app.route('/add_to_playlist2', methods=['POST'])
+def add_to_playlist2():
+    playlist_id = request.form.get('playlist_id')
+    song_title = request.form.get('song_title')  # Get the song title from the form
 
-        # Store the question and response in the Chat model
-        chat = Chat(user_id=user_id, message=user_message, response=answer)
-        db.session.add(chat)
+    if not playlist_id or not song_title:
+        flash('Missing playlist or song information.', 'danger')
+        return redirect(url_for('index'))  # Or wherever you want to redirect
+
+    # Find the song by title
+    song = Song.query.filter_by(title=song_title).first()
+
+    if not song:
+        flash(f'Song "{song_title}" not found.', 'danger')
+        return redirect(url_for('index'))
+
+    # Find the playlist
+    playlist = Playlist.query.get(playlist_id)
+
+    if not playlist:
+        flash('Playlist not found.', 'danger')
+        return redirect(url_for('index'))
+
+    # Check if the song is already in the playlist
+    existing_entry = PlaylistSong.query.filter_by(playlist_id=playlist_id, song_id=song.song_id).first()
+
+    if existing_entry:
+        flash('Song is already in this playlist.', 'info')
+    else:
+        # Add the song to the playlist
+        new_entry = PlaylistSong(playlist_id=playlist_id, song_id=song.song_id)
+        db.session.add(new_entry)
         db.session.commit()
+        flash(f'Song "{song_title}" added to playlist!', 'success')
 
-    except Exception as e:
-        answer = "Sorry, something went wrong. Please try again."
+    return redirect(url_for('index'))  # Or redirect to another page like view_playlist
 
-    return jsonify({'answer': answer})
+@app.route('/view_artist_songs/<artist_id>', methods=['GET'])
+def view_artist_songs(artist_id):
+    artist = Artist.query.get(artist_id)
+    if artist:
+        # Fetch all songs associated with this artist
+        songs = Song.query.join(SongArtist).filter(SongArtist.artist_id == artist.artist_id).all()
+        return render_template('artist_songs.html', artist=artist, songs=songs)
+    else:
+        return "Artist not found", 404
+
+@app.route('/search_artist', methods=['GET'])
+def search_artist():
+    query = request.args.get('query', '')
+    if query:
+        # Perform a query to get artists based on the search query
+        artists = Artist.query.filter(Artist.artist_name.contains(query)).all()
+
+        artist_list = []
+        for artist in artists:
+            artist_list.append({
+                'artist_id': artist.artist_id,
+                'artist_name': artist.artist_name
+            })
+
+        return jsonify(artist_list)
+
+    return render_template('search_artist.html')

@@ -252,3 +252,159 @@ h1 {
     color: white;
     font-size: 20px;
 }
+
+.purple-footer {
+    background-color: #800080; /* Purple color */
+    color: white;
+    padding: 10px 0;
+}
+
+.chat-container {
+    position: fixed;
+    bottom: 60px;
+    right: 20px;
+    width: 300px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.chat-header {
+    background-color: #800080; /* Purple header */
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-messages {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+.chat-input {
+    width: calc(100% - 80px);
+    padding: 5px;
+}
+
+.btn-primary {
+    margin: 5px;
+}
+
+.user-message {
+    text-align: right;
+    margin: 5px 0;
+    color: blue;
+}
+
+.bot-message {
+    text-align: left;
+    margin: 5px 0;
+    color: green;
+}
+
+.error-message {
+    text-align: left;
+    margin: 5px 0;
+    color: red;
+}
+
+#chatContainer {
+    display: none;  /* Hidden by default */
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 300px;
+    height: 400px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Chat Modal Styles */
+.chat-modal {
+    display: none;  /* Hidden by default */
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 350px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.chat-modal-content {
+    display: flex;
+    flex-direction: column;
+    height: 400px;
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    background-color: #800080; /* Purple header */
+    color: white;
+    padding: 10px;
+    border-radius: 8px 8px 0 0;
+}
+
+.chat-header h5 {
+    margin: 0;
+}
+
+.chat-messages {
+    flex-grow: 1;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.chat-input {
+    padding: 10px;
+    margin: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: calc(100% - 20px);
+}
+
+#sendMessage {
+    margin: 10px;
+    align-self: flex-end;
+}
+
+.profile-section {
+    border: 2px solid #6a0dad;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+}
+
+/* Buttons in purple */
+.btn-purple {
+    background-color: #6a0dad;
+    border-color: #6a0dad;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #5a008f;
+    border-color: #5a008f;
+}
+
+/* Footer Style */
+footer {
+    background-color: #6a0dad;
+    color: white;
+    padding: 15px 0;
+    text-align: center;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}

@@ -48,3 +48,6 @@ class AddSongsForm(FlaskForm):
 class SongRemoveForm(FlaskForm):
     song_id = HiddenField('Song ID', validators=[DataRequired()])
     playlist_id = HiddenField('Playlist ID', validators=[DataRequired()])
+
+class ChatForm(FlaskForm):
+    message = StringField('Message', validators=[DataRequired()])

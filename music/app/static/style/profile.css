@@ -1,0 +1,115 @@
+/* Profile Page Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.container {
+    max-width: 960px;
+}
+
+.header {
+    background-color: #6a0dad;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 40px;
+}
+
+.header h1 {
+    text-align: center;
+}
+
+.form-row {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    width: 100%;
+}
+
+.form-control {
+    border-color: #6a0dad;
+    color: #6a0dad;
+}
+
+.card {
+    border: 2px solid #6a0dad;
+    background-color: #f9f9f9;
+    color: #6a0dad;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #6a0dad;
+}
+
+.shadow-sm {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-purple {
+    background-color: #6a0dad;
+    border-color: #6a0dad;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #580f8f;
+    border-color: #580f8f;
+}
+
+.btn-danger,
+.btn-warning {
+    background-color: #6a0dad;
+    border-color: #6a0dad;
+    color: white;
+}
+
+.btn-danger:hover,
+.btn-warning:hover {
+    background-color: #580f8f;
+    border-color: #580f8f;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+/* Add purple borders around each section */
+.profile-section {
+    border: 2px solid #6a0dad;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+}
+
+/* Buttons in purple */
+.btn-purple {
+    background-color: #6a0dad;
+    border-color: #6a0dad;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #5a008f;
+    border-color: #5a008f;
+}
+
+/* Footer Style */
+footer {
+    background-color: #6a0dad;
+    color: white;
+    padding: 15px 0;
+    text-align: center;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
