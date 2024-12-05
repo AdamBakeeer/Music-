@@ -28,14 +28,38 @@
                 <h1>Welcome to Adamtify</h1>
                 <hr>
                 <h3>Search for Songs</h3>
-                <!-- Button to go to the song search page -->
                 <a href="{{ url_for('search') }}" class="btn btn-primary">Go to Song Search</a>
-            
+
                 <h3 class="mt-4">Search for Artists</h3>
-                <!-- Button to go to the artist search page -->
                 <a href="{{ url_for('search_artist') }}" class="btn btn-secondary">Go to Artist Search</a>
+
+                <!-- Recommended Songs Section -->
+                <h3 class="mt-4">Recommended Songs for You</h3>
+                <ul class="list-group">
+                    {% if recommended_songs %}
+                        {% for song in recommended_songs %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <strong>{{ song.title }}</strong> by {{ song.artists[0].artist.artist_name }}
+                                <a href="{{ url_for('add_to_playlist', song_id=song.song_id) }}" class="btn btn-sm btn-primary">Add to Playlist</a>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item">No song recommendations available.</li>
+                    {% endif %}
+                </ul>
+
+
+                <h3 class="mt-4">Top 10 Tracks of the Week</h3>
+                <ol class="list-group">
+                    {% for track in top_tracks[:10] %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ loop.index }}. {{ track.name }} <br>
+                            <span class="text-muted">by {{ track.artist }}</span>
+                            <a href="{{ track.url }}" class="btn btn-primary btn-sm" target="_blank">Listen</a>
+                        </li>
+                    {% endfor %}
+                </ol>
             </div>
-            
         </div>
     </div>
 {% endblock %}

@@ -1,19 +1,13 @@
 from app import app, db
 from flask import render_template, flash, request, jsonify, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.models import User, Artist, Song, Playlist, PlaylistSong, UserArtist, UserGenre, Genre
+from app.models import User, Artist, Song, Playlist, PlaylistSong, UserArtist, UserGenre, Genre, SongArtist, Chat
 from app.forms import SignupForm, LoginForm, PlaylistForm, DeleteAccountForm, CSRFProtectedForm, AddSongsForm, SongRemoveForm
 import re
 from flask_wtf.csrf import CSRFProtect
 from flask_wtf import FlaskForm
 from flask import g
-
-
-
-# Spotify credentials
-client_id = "09e81b42d74d4504b5a4038da6625e60"
-client_secret = "8bf09c6ca2344f178063eb6628829d4e"
-
+import pyl
 # Last.fm API key
 LASTFM_API_KEY = "404ef23228bb084db0c7f5114d94b8db"
 BASE_URL = "http://ws.audioscrobbler.com/2.0/"
@@ -31,19 +25,43 @@ def before_request():
     else:
         g.user = None
 
+
 @app.route('/')
 def index():
     playlists = []
-    songs = []
+    recommended_songs = []  # Initialize recommended_songs as an empty list
     form = PlaylistForm()
     user = None
+    top_tracks = get_weekly_top_tracks()  # Assume this function fetches the top tracks of the week
 
     if 'user_id' in session:
         user = User.query.get(session['user_id'])
         playlists = Playlist.query.filter_by(user_id=session['user_id']).all()
-        songs = Song.query.all()
 
-    return render_template('home.html', playlists=playlists, songs=songs, form=form, user=user)
+        # Get user's preferred artists from the UserArtist table
+        user_artists = UserArtist.query.filter_by(user_id=user.user_id).all()
+        preferred_artists_ids = [user_artist.artist_id for user_artist in user_artists]
+
+        # For each artist, get a song associated with them
+        for artist_id in preferred_artists_ids[:3]:  # Limit to 3 artists
+            # Fetch one song for the current artist
+            song = Song.query.join(SongArtist).filter(SongArtist.artist_id == artist_id).first()
+
+            if song:
+                # Check if the song is already in any of the user's playlists
+                song_in_playlist = PlaylistSong.query.filter_by(song_id=song.song_id).join(Playlist).filter(Playlist.user_id == user.user_id).first()
+
+                if not song_in_playlist:  # If the song is not in the playlist
+                    recommended_songs.append(song)
+
+    return render_template(
+        'home.html', 
+        playlists=playlists, 
+        form=form, 
+        user=user, 
+        top_tracks=top_tracks, 
+        recommended_songs=recommended_songs
+    )
 
 @app.route('/sign', methods=['GET', 'POST'])
 def signup():
@@ -344,28 +362,7 @@ def search():
 
     return render_template('search.html')
 
-@app.route('/add_to_playlist', methods=['POST'])
-def add_to_playlist():
-    # Get the song_id and playlist_id from the form
-    song_id = request.form.get('song_id')
-    playlist_id = request.form.get('playlist_id')
-
-    # Find the song and playlist objects from the database
-    song = Song.query.get(song_id)
-    playlist = Playlist.query.get(playlist_id)
-
-    if song and playlist:
-        # Add the song to the playlist (assuming you have a many-to-many relationship)
-        song_playlist = SongPlaylist(song_id=song.id, playlist_id=playlist.id)
-        db.session.add(song_playlist)
-        db.session.commit()
-
-        flash("Song added to playlist successfully!", "success")
-    else:
-        flash("Error: Song or Playlist not found.", "danger")
-
-    # Redirect to the page where the search results were (or any other page)
-    return redirect(url_for('home'))  # You can change 'home' to the desired route
+  # You can change 'home' to the desired route
 
 @app.route('/artist_songs/<int:artist_id>')
 def artist_songs(artist_id):
@@ -384,4 +381,72 @@ def search_artist():
         artist_data = [{"id": artist.id, "name": artist.name} for artist in artists]
         return jsonify(artist_data)
     else:
-        return jsonify([])  
+        return jsonify([]) 
+
+
+# Last.fm API credentials
+LASTFM_API_KEY = "404ef23228bb084db0c7f5114d94b8db"
+network = pylast.LastFMNetwork(api_key=LASTFM_API_KEY, api_secret=None)
+
+def get_weekly_top_tracks():
+    # Fetch the top tracks globally
+    tracks = network.get_top_tracks()
+    top_tracks = []
+    
+    # Collect track details (e.g., name, artist, URL, image)
+    for track in tracks:
+        top_tracks.append({
+            'name': track.item.title,
+            'artist': track.item.artist.name
+        })
+    
+    return top_tracks
+
+@app.route('/add_to_playlist', methods=['POST'])
+def add_to_playlist():
+    if 'user_id' not in session:
+        flash('You must be logged in to add songs to a playlist.', 'danger')
+        return redirect(url_for('login'))
+
+    song_id = request.form.get('song_id')
+    playlist_id = request.form.get('playlist_id')
+
+    # Fetch the song and playlist
+    song = Song.query.get(song_id)
+    playlist = Playlist.query.get(playlist_id)
+
+    if song and playlist:
+        # Add the song to the playlist
+        playlist_song = PlaylistSong(playlist_id=playlist.playlist_id, song_id=song.song_id)
+        db.session.add(playlist_song)
+        db.session.commit()
+
+        flash("Song added to playlist successfully!", "success")
+    else:
+        flash("Error: Song or Playlist not found.", "danger")
+
+    return redirect(url_for('index'))
+
+@app.route('/ask_chatbot', methods=['POST'])
+def ask_chatbot():
+    user_message = request.form.get('message')
+    user_id = g.user.user_id  # Assuming the user is logged in and g.user contains user data
+    
+    # Use OpenAI API to get the response
+    try:
+        response = openai.Completion.create(
+            engine="text-davinci-003",  # You can replace with other models if necessary
+            prompt=f"Answer this music-related question: {user_message}",
+            max_tokens=150
+        )
+        answer = response.choices[0].text.strip()
+
+        # Store the question and response in the Chat model
+        chat = Chat(user_id=user_id, message=user_message, response=answer)
+        db.session.add(chat)
+        db.session.commit()
+
+    except Exception as e:
+        answer = "Sorry, something went wrong. Please try again."
+
+    return jsonify({'answer': answer})

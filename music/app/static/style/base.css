@@ -203,3 +203,52 @@ h1 {
     height: auto;  /* Maintain the aspect ratio */
 }
 
+/* Style for the chat interface */
+.chat-container {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 300px;
+    height: 400px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    display: none;
+    flex-direction: column;
+    box-shadow: -2px 0px 10px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+}
+
+.chat-header {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.chat-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+#chatButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10000;
+}
+
+#closeChat {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 20px;
+}
