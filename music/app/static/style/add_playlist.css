@@ -1,0 +1,78 @@
+/* General Form Section Styling */
+.form-section {
+    border: 2px solid #6a0dad;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Titles and Headers */
+h2, h3 {
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+h2 {
+    color: #6a0dad;
+}
+
+h3 {
+    color: #5a5a5a;
+}
+
+/* Form Labels */
+label {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Form Inputs */
+input[type="text"], select, textarea {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    width: 100%;
+}
+
+/* Buttons */
+.btn-purple {
+    background-color: #6a0dad;
+    border-color: #6a0dad;
+    color: white;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 1rem;
+}
+
+.btn-purple:hover {
+    background-color: #5a008f;
+    border-color: #5a008f;
+}
+
+/* Margins for Responsive Layout */
+.form-group {
+    margin-bottom: 20px;
+}
+
+h2.text-center {
+    color: #000; /* Black heading */
+    font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .form-section {
+        padding: 15px;
+    }
+
+    .btn-purple {
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+
+    .btn-block {
+        width: 100%;
+    }
+}

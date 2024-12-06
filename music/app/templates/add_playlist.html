@@ -2,55 +2,50 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="text-center">Create Playlist and Add Songs</h2>
-    <hr>
+    <h2 class="text-center text-dark">Create Playlist and Add Songs</h2>
+    <hr class="mb-4">
 
-    <div class="form-section">
+    <!-- Form Section -->
+    <div class="form-section p-4" style="border: 2px solid #6a0dad; border-radius: 8px; background-color: #f9f9f9;">
         <form method="POST" action="{{ url_for('add_playlist') }}">
             {{ form.hidden_tag() }}
 
             <!-- Playlist Name -->
-            <div class="form-group">
-                <h3 class="text-center">Playlist Name</h3>
+            <div class="form-group mb-4">
+                <h3 class="text-center text-secondary">Playlist Name</h3>
                 {{ form.playlist_name(class="form-control") }}
             </div>
-            
+
             <!-- Songs Section -->
-            <h3 class="text-center">Add Songs</h3>
-            <div class="form-group">
-                <label for="song1">Song 1</label>
-                {{ form.song1(class="form-control") }}
-            </div>
-
-            <div class="form-group">
-                <label for="song2">Song 2</label>
-                {{ form.song2(class="form-control") }}
-            </div>
-
-            <div class="form-group">
-                <label for="song3">Song 3</label>
-                {{ form.song3(class="form-control") }}
-            </div>
-
-            <div class="form-group">
-                <label for="song4">Song 4</label>
-                {{ form.song4(class="form-control") }}
-            </div>
-
-            <div class="form-group">
-                <label for="song5">Song 5</label>
-                {{ form.song5(class="form-control") }}
+            <h3 class="text-center text-secondary">Add Songs</h3>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="song1" class="form-label">Song 1</label>
+                    {{ form.song1(class="form-control") }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="song2" class="form-label">Song 2</label>
+                    {{ form.song2(class="form-control") }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="song3" class="form-label">Song 3</label>
+                    {{ form.song3(class="form-control") }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="song4" class="form-label">Song 4</label>
+                    {{ form.song4(class="form-control") }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="song5" class="form-label">Song 5</label>
+                    {{ form.song5(class="form-control") }}
+                </div>
             </div>
 
             <!-- Submit Button -->
-            <button type="submit" class="btn btn-purple btn-block mt-3">Create Playlist</button>
+            <div class="text-center">
+                <button type="submit" class="btn btn-purple btn-block w-50 mt-4">Create Playlist</button>
+            </div>
         </form>
     </div>
 </div>
-
-<!-- Footer -->
-<footer class="mt-auto">
-    <p class="text-center" style="color: white;">@Aditmy</p>
-</footer>
-
 {% endblock %}
