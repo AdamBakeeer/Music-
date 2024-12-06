@@ -39,122 +39,170 @@
 
     <!-- Main Profile Content -->
     <div class="container mt-5">
-        <h1>Your Profile</h1>
+        <h1 class="text-center">Your Profile</h1>
         <hr>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container mt-3">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
 
         <!-- Change Username Section -->
-        <div class="profile-section">
-            <h3>Change Username</h3>
+        <div class="profile-section" style="border: 2px solid #6a0dad; border-radius: 8px; padding: 20px; margin-top: 5%; background-color: #f9f9f9;">
+            <h3 class="text-center">Change Username</h3>
             <form method="POST" action="{{ url_for('change_username') }}">
                 {{ form.hidden_tag() }}
                 <div class="form-group">
                     <label for="username">New Username</label>
                     <input type="text" id="username" name="username" class="form-control" required>
                 </div>
-                <button type="submit" class="btn btn-purple mt-2">Update Username</button>
+                <button type="submit" class="btn btn-purple mt-2 w-100">Update Username</button>
             </form>
         </div>
 
         <!-- Change Password Section -->
-        <div class="profile-section">
-            <h3>Change Password</h3>
-            <div class="row">
-                <div class="col-md-6">
-                    <form method="POST" action="{{ url_for('change_password') }}">
-                        {{ form.hidden_tag() }}
+        <div class="profile-section" style="border: 2px solid #6a0dad; border-radius: 8px; padding: 20px; margin-top: 5%; background-color: #f9f9f9;">
+            <h3 class="text-center">Change Password</h3>
+            <form method="POST" action="{{ url_for('change_password') }}">
+                {{ form.hidden_tag() }}
+                <div class="row">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label for="current_password">Current Password</label>
                             <input type="password" id="current_password" name="current_password" class="form-control" required>
                         </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="new_password">New Password</label>
-                        <input type="password" id="new_password" name="new_password" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="new_password">New Password</label>
+                            <input type="password" id="new_password" name="new_password" class="form-control" required>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <button type="submit" class="btn btn-purple mt-2">Update Password</button>
+                <button type="submit" class="btn btn-purple mt-2 w-100">Update Password</button>
             </form>
         </div>
 
-        <!-- Change Preferences Section -->
-        <div class="profile-section">
-            <h3>Change Preferences</h3>
-            <form method="POST" action="{{ url_for('change_preferences') }}">
-                {{ form.hidden_tag() }}
-                <div class="row">
-                    <div class="col-md-4">
+        <!-- Update Preferences Section -->
+        <div class="profile-section" style="border: 2px solid #6a0dad; border-radius: 8px; padding: 20px; margin-top: 5%; background-color: #f9f9f9;">
+            <h3 class="text-center">Update Preferences</h3>
+            <div class="row">
+                <!-- Preferred Artists -->
+                <div class="col-md-4">
+                    <form method="POST" action="{{ url_for('update_artist_preference', artist_number=1) }}">
+                        {{ form.hidden_tag() }}
                         <div class="form-group">
                             <label for="artist1">Preferred Artist 1</label>
-                            <select id="artist1" name="artist1" class="form-control" required>
+                            <select id="artist1" name="artist" class="form-control" required>
                                 {% for artist_id, artist_name in artists %}
-                                    <option value="{{ artist_id }}">{{ artist_name }}</option>
+                                    <option value="{{ artist_id }}" {% if user_artists[0] and user_artists[0].artist_id == artist_id %}selected{% endif %}>
+                                        {{ artist_name }}
+                                    </option>
                                 {% endfor %}
                             </select>
                         </div>
-                    </div>
-                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-purple mt-2 w-100">Update Artist 1</button>
+                    </form>
+                </div>
+                <div class="col-md-4">
+                    <form method="POST" action="{{ url_for('update_artist_preference', artist_number=2) }}">
+                        {{ form.hidden_tag() }}
                         <div class="form-group">
                             <label for="artist2">Preferred Artist 2</label>
-                            <select id="artist2" name="artist2" class="form-control" required>
+                            <select id="artist2" name="artist" class="form-control" required>
                                 {% for artist_id, artist_name in artists %}
-                                    <option value="{{ artist_id }}">{{ artist_name }}</option>
+                                    <option value="{{ artist_id }}" {% if user_artists[1] and user_artists[1].artist_id == artist_id %}selected{% endif %}>
+                                        {{ artist_name }}
+                                    </option>
                                 {% endfor %}
                             </select>
                         </div>
-                    </div>
-                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-purple mt-2 w-100">Update Artist 2</button>
+                    </form>
+                </div>
+                <div class="col-md-4">
+                    <form method="POST" action="{{ url_for('update_artist_preference', artist_number=3) }}">
+                        {{ form.hidden_tag() }}
                         <div class="form-group">
                             <label for="artist3">Preferred Artist 3</label>
-                            <select id="artist3" name="artist3" class="form-control" required>
+                            <select id="artist3" name="artist" class="form-control" required>
                                 {% for artist_id, artist_name in artists %}
-                                    <option value="{{ artist_id }}">{{ artist_name }}</option>
+                                    <option value="{{ artist_id }}" {% if user_artists[2] and user_artists[2].artist_id == artist_id %}selected{% endif %}>
+                                        {{ artist_name }}
+                                    </option>
                                 {% endfor %}
                             </select>
                         </div>
-                    </div>
+                        <button type="submit" class="btn btn-purple mt-2 w-100">Update Artist 3</button>
+                    </form>
                 </div>
-                <div class="row mt-3">
-                    <div class="col-md-6">
+            </div>
+
+            <hr>
+
+            <!-- Preferred Genres -->
+            <div class="row">
+                <div class="col-md-4">
+                    <form method="POST" action="{{ url_for('update_genre_preference', genre_number=1) }}">
+                        {{ form.hidden_tag() }}
                         <div class="form-group">
                             <label for="genre1">Preferred Genre 1</label>
-                            <select id="genre1" name="genre1" class="form-control" required>
+                            <select id="genre1" name="genre" class="form-control" required>
                                 {% for genre_id, genre_name in genres %}
-                                    <option value="{{ genre_id }}">{{ genre_name }}</option>
+                                    <option value="{{ genre_id }}" {% if user_genres[0] and user_genres[0].genre_id == genre_id %}selected{% endif %}>
+                                        {{ genre_name }}
+                                    </option>
                                 {% endfor %}
                             </select>
                         </div>
-                    </div>
-                    <div class="col-md-6">
+                        <button type="submit" class="btn btn-purple mt-2 w-100">Update Genre 1</button>
+                    </form>
+                </div>
+                <div class="col-md-4">
+                    <form method="POST" action="{{ url_for('update_genre_preference', genre_number=2) }}">
+                        {{ form.hidden_tag() }}
                         <div class="form-group">
                             <label for="genre2">Preferred Genre 2</label>
-                            <select id="genre2" name="genre2" class="form-control" required>
+                            <select id="genre2" name="genre" class="form-control" required>
                                 {% for genre_id, genre_name in genres %}
-                                    <option value="{{ genre_id }}">{{ genre_name }}</option>
+                                    <option value="{{ genre_id }}" {% if user_genres[1] and user_genres[1].genre_id == genre_id %}selected{% endif %}>
+                                        {{ genre_name }}
+                                    </option>
                                 {% endfor %}
                             </select>
                         </div>
-                    </div>
+                        <button type="submit" class="btn btn-purple mt-2 w-100">Update Genre 2</button>
+                    </form>
                 </div>
-                <div class="row mt-3">
-                    <div class="col-md-6">
+                <div class="col-md-4">
+                    <form method="POST" action="{{ url_for('update_genre_preference', genre_number=3) }}">
+                        {{ form.hidden_tag() }}
                         <div class="form-group">
                             <label for="genre3">Preferred Genre 3</label>
-                            <select id="genre3" name="genre3" class="form-control" required>
+                            <select id="genre3" name="genre" class="form-control" required>
                                 {% for genre_id, genre_name in genres %}
-                                    <option value="{{ genre_id }}">{{ genre_name }}</option>
+                                    <option value="{{ genre_id }}" {% if user_genres[2] and user_genres[2].genre_id == genre_id %}selected{% endif %}>
+                                        {{ genre_name }}
+                                    </option>
                                 {% endfor %}
                             </select>
                         </div>
-                    </div>
+                        <button type="submit" class="btn btn-purple mt-2 w-100">Update Genre 3</button>
+                    </form>
                 </div>
-                <button type="submit" class="btn btn-purple mt-2 w-100">Update Preferences</button>
-            </form>
+            </div>
         </div>
 
         <!-- Delete Account and Logout Buttons Section -->
-        <div class="profile-section">
+        <div class="profile-section" style="border: 2px solid #6a0dad; border-radius: 8px; padding: 20px; margin-top: 5%; background-color: #f9f9f9;">
             <div class="row mt-4">
                 <div class="col-md-6">
                     <a href="{{ url_for('confirm_delete') }}" class="btn btn-danger w-100 btn-purple">Delete Account</a>

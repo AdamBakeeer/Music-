@@ -82,7 +82,7 @@ body {
     width: 100%;
 }
 
-/* Add purple borders around each section */
+
 .profile-section {
     border: 2px solid #6a0dad;
     border-radius: 8px;
@@ -91,7 +91,7 @@ body {
     background-color: #f9f9f9;
 }
 
-/* Buttons in purple */
+
 .btn-purple {
     background-color: #6a0dad;
     border-color: #6a0dad;
@@ -104,7 +104,7 @@ body {
 }
 
 
- /* Add purple borders around each section */
+
  .profile-section {
     border: 2px solid #6a0dad;
     border-radius: 8px;
@@ -113,7 +113,7 @@ body {
     background-color: #f9f9f9;
 }
 
-/* Buttons in purple */
+
 .btn-purple {
     background-color: #6a0dad;
     border-color: #6a0dad;
@@ -125,7 +125,7 @@ body {
     border-color: #5a008f;
 }
 
-/* Footer Style */
+
 footer {
     background-color: #6a0dad;
     color: white;

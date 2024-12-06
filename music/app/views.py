@@ -9,6 +9,7 @@ from app.forms import PlaylistForm, CSRFProtectedForm, AddSongsForm
 import re
 from flask import g
 import pylast
+from flask_wtf import FlaskForm
 
 
 # Last.fm API key
@@ -150,6 +151,8 @@ def login():
 
     return render_template('login.html', form=form)
 
+class CSRFProtectedForm(FlaskForm):
+    pass
 
 @app.route('/profile/<int:user_id>', methods=['GET', 'POST'])
 def profile(user_id):
@@ -162,7 +165,22 @@ def profile(user_id):
     artists = [(artist.artist_id, artist.artist_name) for artist in Artist.query.all()]
     genres = [(genre.genre_id, genre.genre_name) for genre in Genre.query.all()]
 
-    return render_template('profile.html', user=user, form=form, artists=artists, genres=genres)
+    # Fetch the user's current artist preferences
+    user_artists = UserArtist.query.filter_by(user_id=user_id).all()
+    # Create a list of exactly three preferences
+    user_artists_ordered = user_artists[:3]  # Take up to 3 existing preferences
+    while len(user_artists_ordered) < 3:     # Fill empty slots with None
+        user_artists_ordered.append(None)
+
+    # Fetch the user's current genre preferences
+    user_genres = UserGenre.query.filter_by(user_id=user_id).all()
+    user_genres_ordered = user_genres[:3]
+    while len(user_genres_ordered) < 3:
+        user_genres_ordered.append(None)
+
+    return render_template('profile.html', user=user, form=form, artists=artists, genres=genres,
+                           user_artists=user_artists_ordered, user_genres=user_genres_ordered)
+
 
 
 @app.route('/change_username', methods=['POST'])
@@ -501,3 +519,53 @@ def search_artist():
         return jsonify(artist_list)
 
     return render_template('search_artist.html')
+
+@app.route('/update_artist/<int:artist_number>', methods=['POST'])
+def update_artist_preference(artist_number):
+    user = User.query.get(session['user_id'])
+    artist_id = request.form['artist']
+
+    existing_artist = UserArtist.query.filter_by(user_id=user.user_id, artist_id=artist_id).first()
+    if existing_artist:
+        flash(f"Error: Artist is already in your preferences.", "danger")
+        return redirect(url_for('profile', user_id=user.user_id))
+    
+    # Fetch all artist preferences for the user
+    user_artists = UserArtist.query.filter_by(user_id=user.user_id).all()
+
+    if artist_number <= len(user_artists):
+        # Update the existing artist preference in the given slot
+        user_artists[artist_number - 1].artist_id = artist_id
+    else:
+        # Add a new artist preference if the slot doesn't exist
+        new_artist = UserArtist(user_id=user.user_id, artist_id=artist_id)
+        db.session.add(new_artist)
+
+    db.session.commit()
+    flash(f'Preferred Artist {artist_number} updated successfully!', 'success')
+    return redirect(url_for('profile', user_id=user.user_id))
+
+
+@app.route('/update_genre/<int:genre_number>', methods=['POST'])
+def update_genre_preference(genre_number):
+    user = User.query.get(session['user_id'])
+    genre_id = request.form['genre']
+
+    # Check if the genre already exists for the user
+    existing_genre = UserGenre.query.filter_by(user_id=user.user_id, genre_id=genre_id).first()
+    if existing_genre:
+        flash(f"Error: Genre is already in your preferences.", "danger")
+        return redirect(url_for('profile', user_id=user.user_id))
+    
+    # Check if a preference exists for the given genre_number position
+    user_genre = UserGenre.query.filter_by(user_id=user.user_id).offset(genre_number - 1).first()
+    if user_genre:
+        user_genre.genre_id = genre_id  # Update the genre ID for the position
+    else:
+        # Create a new record if no preference exists for the position
+        user_genre = UserGenre(user_id=user.user_id, genre_id=genre_id)
+        db.session.add(user_genre)
+
+    db.session.commit()
+    flash(f'Preferred Genre {genre_number} updated successfully!', 'success')
+    return redirect(url_for('profile', user_id=user.user_id))
